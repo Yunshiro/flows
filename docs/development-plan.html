@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flows 时间管理应用 — 开发计划</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f6f8fb;
+    --paper: #ffffff;
+    --ink: #111827;
+    --muted: #4b5563;
+    --line: #d1d5db;
+    --accent: #2563eb;
+    --accent-soft: #eff6ff;
+    --code-bg: #111827;
+    --code-ink: #f9fafb;
+    --tag-bg: #dbeafe;
+    --tag-ink: #1e40af;
+    --tag-green-bg: #EDF3EC;
+    --tag-green-text: #346538;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .page {
+    width: min(1040px, calc(100vw - 32px));
+    margin: 0 auto;
+    padding: 32px 0 48px;
+  }
+
+  header, nav, section, footer {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    padding: 24px;
+  }
+
+  main { display: grid; gap: 16px; }
+
+  h1, h2, h3, p { margin: 0; }
+  h1 { font-size: 36px; line-height: 1.15; }
+  h2 { margin-bottom: 12px; font-size: 24px; }
+  h3 { margin: 18px 0 8px; font-size: 18px; }
+
+  p, li, td { color: var(--muted); }
+
+  a { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th { background: var(--accent-soft); color: var(--ink); }
+
+  code {
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    padding: 2px 5px;
+  }
+
+  pre {
+    overflow: auto;
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px;
+  }
+
+  pre code { background: transparent; color: inherit; padding: 0; }
+
+  .callout {
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    background: var(--accent-soft);
+    padding: 14px 16px;
+    margin: 16px 0;
+  }
+
+  .tag {
+    display: inline-block;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    color: var(--tag-ink);
+    padding: 1px 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .plan-header { margin-bottom: 8px; }
+  .plan-header p { color: var(--muted); font-size: 14px; }
+
+  .toc { margin-bottom: 16px; }
+  .toc ul { padding-left: 20px; color: var(--muted); }
+  .toc li { margin-bottom: 4px; }
+
+  .arch-diagram {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  @media print {
+    body { background: #fff; }
+    section { break-inside: avoid; }
+  }
+
+  @media (max-width: 768px) {
+    .page { padding: 24px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Flows — 时间管理桌面应用</h1>
+  <p class="plan-header">开发计划文档</p>
+  <p>版本 0.1.0 | 2026-06-25 | 状态：规划阶段</p>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ul>
+    <li><a href="#overview">1. 项目概述与目标</a></li>
+    <li><a href="#architecture">2. 技术架构总览</a></li>
+    <li><a href="#frontend">3. 前端架构设计</a></li>
+    <li><a href="#backend">4. 后端 / Rust 层设计</a></li>
+    <li><a href="#data-model">5. 数据模型设计</a></li>
+    <li><a href="#module-design">6. 模块详细设计</a></li>
+    <li><a href="#git-sync">7. Git 同步方案</a></li>
+    <li><a href="#roadmap">8. 开发路线图与里程碑</a></li>
+    <li><a href="#dependencies">9. 推荐依赖清单</a></li>
+    <li><a href="#risks">10. 风险与注意事项</a></li>
+  </ul>
+</nav>
+
+<main>
+<section id="overview">
+  <h2>1. 项目概述与目标</h2>
+
+  <h3>1.1 项目定位</h3>
+  <p><strong>Flows</strong> 是一款面向个人使用的跨平台桌面时间管理工具，帮助用户规划每日任务、记录工作复盘、自动生成周报，并管理个人 Markdown 知识库。</p>
+
+  <h3>1.2 核心目标</h3>
+  <ul>
+    <li><strong>本地优先</strong>：所有数据存储在用户本地设备，隐私可控。</li>
+    <li><strong>AI 驱动</strong>：利用 LLM 自动总结周报，减少手动记录负担。</li>
+    <li><strong>极简高效</strong>：聚焦核心时间管理流程，避免功能膨胀。</li>
+    <li><strong>数据可迁移</strong>：支持 Git 同步，数据不绑定平台。</li>
+  </ul>
+
+  <h3>1.3 非目标（范围外）</h3>
+  <ul>
+    <li>非多人在线协作工具（如 Notion、飞书）</li>
+    <li>非企业级项目管理（如 Jira、Linear）</li>
+    <li>非移动端优先（仅桌面端）</li>
+  </ul>
+</section>
+
+<section id="architecture">
+  <h2>2. 技术架构总览</h2>
+
+  <div class="arch-diagram">
+<pre><code>
+┌─────────────────────────────────────────────────────────┐
+│                    Flows 系统架构                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────┐    ┌──────────────┐                  │
+│  │  Vue 3 前端  │    │  Tauri v2    │                  │
+│  │  (Renderer)  │◄──►│  (Rust Core) │                  │
+│  └──────┬───────┘    └──────┬───────┘                  │
+│         │                   │                          │
+│    Vue Router          Tauri Commands                  │
+│    Pinia Store         (IPC / invoke)                  │
+│                                                         │
+│  ┌──────────────┐    ┌──────────────┐                  │
+│  │  本地存储层   │    │  外部服务层   │                  │
+│  │  SQLite      │    │  Claude API  │                  │
+│  │  JSON 文件   │    │  GitHub Git  │                  │
+│  └──────────────┘    └──────────────┘                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+  </div>
+
+  <table>
+    <thead><tr><th>层级</th><th>技术选型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>前端框架</td><td>Vue 3 + TypeScript + Vite 6</td><td>已有模板项目</td></tr>
+      <tr><td>桌面容器</td><td>Tauri v2 (Rust)</td><td>跨平台桌面窗口</td></tr>
+      <tr><td>前端状态管理</td><td>Pinia</td><td>Vue 官方状态管理库</td></tr>
+      <tr><td>前端路由</td><td>Vue Router</td><td>SPA 页面路由</td></tr>
+      <tr><td>UI 组件库</td><td>TDesign Vue Next / Naive UI</td><td>企业级组件库</td></tr>
+      <tr><td>Markdown 编辑器</td><td>Toast UI Editor / Tiptap</td><td>富文本编辑</td></tr>
+      <tr><td>图表可视化</td><td>ECharts</td><td>数据统计图表</td></tr>
+      <tr><td>CSS 方案</td><td>Tailwind CSS / UnoCSS</td><td>原子化 CSS 引擎</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.1 数据流向</h3>
+  <ol>
+    <li><strong>待办 & 复盘数据</strong>：SQLite 数据库（本地）</li>
+    <li><strong>笔记数据</strong>：本地文件系统（Markdown + 附件）</li>
+    <li><strong>LLM 调用</strong>：HTTP 请求 → Claude API / OpenAI API</li>
+    <li><strong>Git 同步</strong>：Rust 调用 git2 库操作本地仓库</li>
+  </ol>
+</section>
+
+<section id="frontend">
+  <h2>3. 前端架构设计</h2>
+
+  <h3>3.1 路由设计</h3>
+  <table>
+    <thead><tr><th>路由</th><th>对应页面</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>仪表盘首页</td><td>今日待办 + 复盘入口</td></tr>
+      <tr><td><code>/todos</code></td><td>待办清单页</td><td>增删改查、拖拽排序、自动滚动</td></tr>
+      <tr><td><code>/review</code></td><td>每日复盘页</td><td>Markdown 编辑、心情标记、关联待办</td></tr>
+      <tr><td><code>/weekly</code></td><td>每周总览页</td><td>自动生成、手动编辑、图表统计</td></tr>
+      <tr><td><code>/notes</code></td><td>笔记管理页</td><td>文件树、Markdown 编辑、全文搜索、Wiki 链接</td></tr>
+      <tr><td><code>/settings</code></td><td>设置页</td><td>LLM 配置、Git 远程仓库连接</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 组件树</h3>
+
+  <div class="arch-diagram">
+<pre><code>
+App.vue
+├── AppLayout.vue          ← 全局布局（侧边导航 + 主内容区）
+├── pages/
+│   ├── todos/
+│   │   └── TodoPage.vue       ← 待办清单主页
+│   ├── review/
+│   │   └── ReviewPage.vue     ← 每日复盘页
+│   ├── weekly/
+│   │   └── WeeklyPage.vue     ← 每周总览页
+│   ├── notes/
+│   │   ├── NotesPage.vue      ← 笔记列表页
+│   │   └── NoteEditor.vue     ← 笔记编辑器页
+│   └── settings/
+│       └── SettingsPage.vue   ← 设置页
+└── components/
+    ├── common/
+    │   ├── AppSidebar.vue      ← 侧边导航栏
+    │   └── AppHeader.vue       ← 顶部操作栏
+    ├── todos/
+    │   ├── TodoList.vue        ← 待办列表
+    │   ├── TodoItem.vue        ← 待办卡片（支持拖拽）
+    │   └── TodoForm.vue        ← 待办编辑表单
+    ├── review/
+    │   ├── ReviewEditor.vue    ← 复盘 Markdown 编辑器
+    │   └── ReviewTimeline.vue  ← 复盘时间线
+    ├── weekly/
+    │   ├── WeeklyChart.vue     ← 周报图表
+    │   └── WeeklySummary.vue   ← AI 总结卡片
+    └── notes/
+        ├── NoteTree.vue        ← 笔记文件树
+        ├── NoteEditor.vue      ← Markdown 编辑器
+        └── NoteSearch.vue      ← 全文搜索栏
+</code></pre>
+  </div>
+
+  <h3>3.3 状态管理 (Pinia Store)</h3>
+  <table>
+    <thead><tr><th>Store</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>useTodoStore</code></td><td>待办状态：列表、增删改、筛选排序</td></tr>
+      <tr><td><code>useReviewStore</code></td><td>复盘状态：CRUD、时间线数据</td></tr>
+      <tr><td><code>useWeeklyStore</code></td><td>周报状态：AI 生成结果、统计数据</td></tr>
+      <tr><td><code>useNotesStore</code></td><td>笔记状态：文件树、编辑器内容、搜索</td></tr>
+      <tr><td><code>useSettingsStore</code></td><td>设置状态：LLM 密钥、Git 配置</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.4 UI 框架选型</h3>
+  <div class="callout">
+    <strong>推荐方案</strong>：<strong>TDesign Vue Next</strong> — 腾讯出品企业级 Vue 3 组件库，设计规范、TypeScript 友好、主题可定制。
+    <br><br>
+    <strong>备选方案</strong>：Naive UI / Element Plus / Ant Design Vue / Radix Vue / PrimeVue / Vuetify 等均可。
+    <br><br>
+    <strong>选型理由</strong>：TDesign 是国内 Vue 生态最成熟的企业级组件库，社区活跃、文档齐全、更新及时。
+  </div>
+</section>
+
+<section id="backend">
+  <h2>4. 后端 / Rust 层设计</h2>
+
+  <h3>4.1 Tauri Command 设计</h3>
+  <table>
+    <thead><tr><th>Command</th><th>功能</th><th>参数</th></tr></thead>
+    <tbody>
+      <tr><td><code>add_todo</code></td><td>新增待办</td><td><code>{ title, priority, est_minutes, tags }</code></td></tr>
+      <tr><td><code>update_todo</code></td><td>更新待办</td><td><code>{ id, title, ... }</code></td></tr>
+      <tr><td><code>delete_todo</code></td><td>删除待办</td><td><code>{ id }</code></td></tr>
+      <tr><td><code>list_todos</code></td><td>查询待办列表</td><td><code>{ date?, status? }</code></td></tr>
+      <tr><td><code>reorder_todos</code></td><td>拖拽排序</td><td><code>{ ids[] }</code></td></tr>
+      <tr><td><code>save_review</code></td><td>保存复盘</td><td><code>{ date, content, mood }</code></td></tr>
+      <tr><td><code>get_review</code></td><td>获取复盘</td><td><code>{ date }</code></td></tr>
+      <tr><td><code>list_reviews</code></td><td>复盘列表</td><td><code>{ year?, month? }</code></td></tr>
+      <tr><td><code>generate_weekly</code></td><td>AI 生成周报</td><td><code>{ week_start }</code></td></tr>
+      <tr><td><code>save_note</code></td><td>保存笔记</td><td><code>{ path, content }</code></td></tr>
+      <tr><td><code>read_note</code></td><td>读取笔记</td><td><code>{ path }</code></td></tr>
+      <tr><td><code>list_notes</code></td><td>笔记列表</td><td><code>{ dir? }</code></td></tr>
+      <tr><td><code>git_push</code></td><td>Git 推送</td><td><code>{ remote, branch }</code></td></tr>
+      <tr><td><code>git_pull</code></td><td>Git 拉取</td><td><code>{ remote, branch }</code></td></tr>
+      <tr><td><code>git_status</code></td><td>Git 状态</td><td><code>{ }</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2 存储方案</h3>
+  <table>
+    <thead><tr><th>数据类型</th><th>存储方案</th><th>选型理由</th></tr></thead>
+    <tbody>
+      <tr><td>待办 / 复盘</td><td><strong>SQLite</strong></td><td>结构化数据，支持复杂查询（按日期、标签、优先级筛选），单文件数据库，无需服务端进程</td></tr>
+      <tr><td>笔记</td><td><strong>本地文件系统</strong></td><td>Markdown 原文存储，附件（图片、文件）保存在笔记目录下，支持 Wiki 双向链接</td></tr>
+      <tr><td>设置 / 密钥</td><td><strong>环境变量 / 配置文件</strong></td><td>LLM API Key 等其他敏感配置禁止提交 Git，使用系统 Keyring 存储</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 外部服务集成</h3>
+  <ul>
+    <li><strong>Claude API / OpenAI API</strong>：HTTP 调用，用于每周自动总结生成。</li>
+    <li><strong>GitHub API / git2-rs</strong>：操作本地 Git 仓库，支持 push/pull 远程同步。</li>
+  </ul>
+</section>
+
+<section id="data-model">
+  <h2>5. 数据模型设计</h2>
+
+  <h3>5.1 Rust Structs</h3>
+<pre><code class="language-rust">
+// ── 待办事项 ──
+struct Todo {
+    id: String,            // UUID
+    title: String,
+    priority: Priority,    // High / Medium / Low
+    est_minutes: u32,
+    actual_minutes: u32,
+    done: bool,
+    tags: Vec&lt;String&gt;,
+    created_at: DateTime,
+    completed_at: Option&lt;DateTime&gt;,
+    date: NaiveDate,       // 所属日期
+}
+
+// ── 每日复盘 ──
+struct DailyReview {
+    date: NaiveDate,
+    content: String,       // Markdown
+    mood: Mood,            // Productive / Normal / Slacking
+    linked_todo_ids: Vec&lt;String&gt;,
+}
+
+// ── 每周总览 ──
+struct WeeklySummary {
+    week_start: NaiveDate,
+    week_end: NaiveDate,
+    ai_content: String,    // LLM 生成
+    edited_content: String,// 手动修改后
+    stats: WeekStats,
+}
+
+struct WeekStats {
+    total_todos: u32,
+    completed_todos: u32,
+    total_est_minutes: u32,
+    total_actual_minutes: u32,
+    avg_mood: f32,
+}
+</code></pre>
+
+  <h3>5.2 TypeScript Interfaces</h3>
+<pre><code class="language-typescript">
+// ── 待办事项 ──
+interface Todo {
+  id: string
+  title: string
+  priority: 'high' | 'medium' | 'low'
+  estMinutes: number
+  actualMinutes: number
+  done: boolean
+  tags: string[]
+  createdAt: string // ISO datetime
+  completedAt: string | null
+  date: string     // "2026-06-25"
+}
+
+// ── 每日复盘 ──
+interface DailyReview {
+  date: string
+  content: string  // markdown
+  mood: 'productive' | 'normal' | 'slacking'
+}
+
+// ── 每周总览 ──
+interface WeeklySummary {
+  weekStart: string
+  weekEnd: string
+  aiContent: string
+  editedContent: string
+  stats: WeekStats
+}
+
+interface WeekStats {
+  totalTodos: number
+  completedTodos: number
+  totalEstMinutes: number
+  totalActualMinutes: number
+}
+
+// ── 笔记 ──
+interface NoteMeta {
+  path: string       // 相对路径
+  title: string      // 文件名
+  createdAt: string
+  updatedAt: string
+  tags: string[]
+  links: string[]    // 双向链接目标路径
+}
+
+// ── 设置 ──
+interface AppSettings {
+  llmApiKey: string
+  llmModel: string
+  gitRemoteUrl: string
+  gitBranch: string
+}
+</code></pre>
+</section>
+
+<section id="module-design">
+  <h2>6. 模块详细设计</h2>
+
+  <h3>6.1 模块一：每日待办清单</h3>
+
+  <h4>页面布局</h4>
+  <pre><code>
+┌──────────────────────────────────────┐
+│  日期选择器    │  操作栏              │
+│  [◀ 前一天]    │  [+ 新增待办]        │
+│  [今天  ▶]    │  [拖拽排序] [筛选]   │
+└──────────────────────────────────────┘
+  </code></pre>
+  <p>左侧为日历日期选择器，可快速切换到历史某天查看待办；顶部操作栏包含新增按钮、筛选下拉框（按优先级、标签、完成状态）和搜索输入框；待办列表每一项左侧有拖拽手柄，支持拖拽排序，点击左侧复选框标记完成。</p>
+
+  <h4>交互流程</h4>
+  <ol>
+    <li>页面加载时读取今日待办列表（SQLite 查询），按未完成优先、创建时间倒序排列。</li>
+    <li>用户点击 <em>新增待办</em> 按钮 → 弹出编辑表单（标题、优先级、预计用时、标签），填写后点击保存。</li>
+    <li>表单校验：标题必填、预计用时可选填。</li>
+    <li>保存成功后刷新列表，表单清空。</li>
+    <li>点击待办卡片左侧复选框 → 切换完成状态，自动记录实际用时和完成时间。</li>
+    <li>未完成项在切换日期时弹窗询问是否滚动到次日。</li>
+    <li>右侧删除按钮 hover 显示，点击后二次确认删除。</li>
+    <li>筛选下拉变更时自动刷新列表。</li>
+  </ol>
+
+  <h4>自定义扩展</h4>
+  <ul>
+    <li>支持标签分类自定义颜色。</li>
+    <li>支持每日复盘模板自定义（默认显示今日日期，自动关联已完成待办）。</li>
+  </ul>
+
+  <h3>6.2 模块二：每日复盘小记</h3>
+
+  <h4>页面布局</h4>
+  <pre><code>
+┌──────────────────────────────────────┐
+│  日期显示（只读）  │  Markdown 编辑器   │
+│  [2026-06-25]     │  [复盘内容...]      │
+│  心情: 高效       │  [保存] [时间线]    │
+└──────────────────────────────────────┘
+  </code></pre>
+  <p>顶部显示当前日期；编辑器支持 Markdown 实时预览；心情标记按钮组切换；下方操作栏包含保存按钮和跳转时间线图标；时间线视图为垂直卡片流，展示历史每日标题、心情图标和关联待办标签。</p>
+
+  <h4>交互流程</h4>
+  <ol>
+    <li>页面加载时读取今日复盘（SQLite 按日期查询）。</li>
+    <li>编辑器支持 Markdown 语法高亮、加粗、斜体等快捷操作。</li>
+    <li>预览面板实时渲染 Markdown。</li>
+    <li>点击保存——内容写入 SQLite，同时关联待办 ID 列表更新。</li>
+    <li>保存成功后跳转至时间线视图。</li>
+  </ol>
+
+  <h3>6.3 模块三：每周自动总结</h3>
+
+  <h4>页面布局</h4>
+  <pre><code>
+┌──────────────────────────────────────────┐
+│  周选择器        │  AI 总结卡片          │
+│  [◀ 前一周]      │  [本周: 06/23 - 06/29] │
+│  [本周 ▶]       │  AI 生成中...  [重试]  │
+│                  │  [手动编辑] [导出]    │
+└──────────────────────────────────────────┘
+  </code></pre>
+  <p>顶部周选择器可快速切换历史周；下方本周卡片显示日期范围和 AI 生成的总结正文，包含本周完成情况统计；底部操作栏包含重试生成按钮、手动编辑区和导出入口。</p>
+
+  <h4>交互流程</h4>
+  <ol>
+    <li>页面加载时查询本周每日复盘和待办数据（SQLite），提交给 LLM API 生成总结。</li>
+    <li>AI 生成内容以卡片形式展示，包含本周统计图表（完成率饼图、用时分布）。</li>
+    <li>用户点击重试按钮 → 重新请求 LLM。</li>
+    <li>用户手动编辑总结正文。</li>
+    <li>点击导出 → 复制 Markdown 到剪贴板 / 保存为本地文件。</li>
+  </ol>
+
+  <h3>6.4 模块四：Markdown 笔记</h3>
+
+  <h4>页面布局</h4>
+  <pre><code>
+┌────────────────────────────────────────┐
+│  文件树面板      │  Markdown 编辑器     │
+│  [📁 文件夹]     │  [标题 / 正文...]     │
+│  [📄 笔记列表]   │  [实时预览] [大纲]   │
+└────────────────────────────────────────┘
+  </code></pre>
+  <p>左侧为文件树面板，展示文件夹层级结构；右侧为编辑器区域，包含标题输入框、正文编辑区和实时预览面板；底部为大纲视图（显示标题层级）。</p>
+
+  <h4>交互流程</h4>
+  <ol>
+    <li>页面加载时读取本地文件系统目录树。</li>
+    <li>用户点击文件夹 → 展开/折叠子目录；点击笔记文件 → 在右侧编辑器中打开。</li>
+    <li>编辑器支持 Markdown 语法高亮、加粗、斜体、代码块等快捷操作。</li>
+    <li>预览面板实时渲染 Markdown，支持 GitHub Flavored Markdown（GFM）。</li>
+    <li>大纲视图跟随编辑器滚动，点击标题跳转至对应正文位置。</li>
+    <li>点击保存——内容写入本地文件系统，更新文件树列表。</li>
+    <li>全文搜索（Ctrl+K / Cmd+K）——在文件树面板顶部搜索框输入关键词，回车后高亮匹配的笔记文件，点击跳转至编辑器对应位置。</li>
+    <li>双向链接 [[wiki-link]] ——编辑器内输入双方括号自动解析为可点击的内部链接，点击后跳转至目标笔记文件。</li>
+  </ol>
+
+</section>
+
+<section id="git-sync">
+  <h2>7. Git 同步方案设计</h2>
+
+  <h3>7.1 整体流程</h3>
+  <pre><code>
+┌──────────────────────────────────────────┐
+│               Git 同步流程                │
+├──────────────────────────────────────────┤
+│                                          │
+│  用户操作            Flows App           │
+│  (笔记仓库设置页)    (Rust 后台)         │
+│                                          │
+│  1. 配置远程仓库     Tauri Command       │
+│     地址 & 分支                           │
+│                                          │
+│  2. 点击"推送"       git2-rs lib         │
+│     Rust 调用 git push                   │
+│                                          │
+│  3. 点击"拉取"       git pull            │
+│     Rust 调用 git pull                   │
+│                                          │
+│  4. 自动后台同步     Cron / 定时器       │
+│     定时 git pull (可选)                 │
+│                                          │
+└──────────────────────────────────────────┘
+  </code></pre>
+
+  <h3>7.2 详细设计</h3>
+  <ol>
+    <li>笔记目录默认路径：<code>{$HOME}/flows-notes/</code>。</li>
+    <li>初始化时若目录不存在则自动创建。</li>
+    <li>用户在设置页配置远程仓库 URL 和分支名。</li>
+    <li>首次同步前需手动点击推送，后续可开启定时自动拉取。</li>
+    <li>每次同步前进行冲突检测：远端有新提交时先拉取再合并，使用 rebase 策略（保留本地修改优先）。</li>
+    <li>同步完成后刷新笔记文件树。</li>
+    <li>离线时允许手动编辑笔记，在线恢复后自动推送。</li>
+  </ol>
+</section>
+
+<section id="roadmap">
+  <h2>8. 开发路线图与里程碑</h2>
+
+  <table>
+    <thead><tr><th>阶段</th><th>周期</th><th>核心交付</th></tr></thead>
+    <tbody>
+      <tr><td>M1</td><td>第 1–2 周</td><td>基础框架搭建</td></tr>
+      <tr><td>M2</td><td>第 3–4 周</td><td>核心功能开发</td></tr>
+      <tr><td>M3</td><td>第 5–6 周</td><td>AI 集成 & 同步 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);font-size:10px;">已完成</span></td></tr>
+      <tr><td>M4</td><td>第 7–8 周</td><td>测试、打磨 & 发布 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);font-size:10px;">已完成</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>M1 — 基础框架搭建（第 1–2 周） <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);padding:2px 10px;border-radius:999px;font-size:12px;">已完成 2026-06-25</span></h3>
+  <ul>
+    <li><s>搭建 Vue 3 项目骨架：路由、布局、Pinia Store、API 服务层。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>搭建 Rust 后端骨架：SQLite 初始化、Tauri Command 注册、数据模型定义。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>统一前端构建工具链：Vite 配置、TypeScript 严格模式。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>确定 UI 组件库选型（自建 minimalist-ui 设计系统）。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><strong>交付物</strong>：可本地运行的 Tauri 开发版桌面应用。 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+  </ul>
+  <div class="callout">
+    <strong>M1 实现总结</strong><br>
+    已创建文件：前端 13 个（router/stores/api/views/components），Rust 端 10 个（models/commands/db）。<br>
+    Vite 前端通过 vue-tsc 类型检查（零错误），Rust 端通过 cargo check 编译（零错误）。<br>
+    SQLite 数据库已初始化（todos / daily_reviews / settings 三张表）。<br>
+    Tauri Commands 已注册 17 个：todo(6) + review(3) + note(6) + settings(2)。
+  </div>
+
+  <h3>M2 — 核心功能开发（第 3–4 周） <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);padding:2px 10px;border-radius:999px;font-size:12px;">已完成 2026-06-25</span></h3>
+  <ul>
+    <li><s><strong>每日待办清单</strong>：完整的 CRUD、拖拽排序、筛选搜索、标签分类、内联编辑。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s><strong>每日复盘小记</strong>：Markdown 编辑器（toolbar + 实时预览）、心情标记、关联待办（点击引用）、时间线视图。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s><strong>每周自动总结</strong>：环形图+柱状图动画、心情分布统计、Rust 端 generate_weekly_summary 命令、一键复制导出。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s><strong>Markdown 笔记</strong>：文件树面板（文件系统扫描）、Markdown 编辑器+预览切换、toolbar、全文搜索、Wiki [[双向链接]] 点击导航、Ctrl+S 保存。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s><strong>设置页</strong>：LLM 配置、Git 远程仓库设置、手动 push/pull、关于信息。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s><strong>共享组件</strong>：MarkdownEditor（toolbar+编辑/预览切换）、TagPicker（输入+建议）、InlineEdit（双击编辑）。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><strong>交付物</strong>：四个模块均可完整使用的桌面应用。 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+  </ul>
+  <div class="callout">
+    <strong>M2 实现总结</strong><br>
+    新增 3 个共享组件（MarkdownEditor / TagPicker / InlineEdit），全面重写 5 个页面。<br>
+    Rust 端新增 weekly_cmd（周报生成）+ git_cmd（push/pull/status）共 4 个命令。<br>
+    前端通过 vue-tsc 类型检查（零错误），Rust 通过 cargo check（零错误）。<br>
+    已注册 Tauri 命令总数：21 个。<br>
+    <strong>修复：</strong>所有 Rust struct 加 #[serde(rename_all = "camelCase")]，所有 Tauri command 加 rename_all，<br>
+    Rust 命令由 struct 参数改为扁平参数避免 invoke 传参不匹配；<br>
+    adapter.ts 补全 localStorage 笔记 CRUD，修复文件树模板顶层文件不渲染的 bug。
+  </div>
+
+  <h3>M3 — AI 集成 & 同步（第 5–6 周） <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);padding:2px 10px;border-radius:999px;font-size:12px;">已完成 2026-06-25</span></h3>
+  <ul>
+    <li><s>OpenAI 兼容接口：支持 DeepSeek / OpenAI / Ollama 等，自定义 URL + Key + 模型名。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>流式输出：SSE 逐 token 实时打印，过滤推理链（reasoning_content），仅显示最终回复。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>多模型配置管理：SQLite llm_configs 表，添加/编辑/删除/设为默认/测试连接。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>Git 同步：auto init、remote 配置、推送前文件选择弹窗、三步引导式 UI。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>自动同步定时器（前端 setInterval，可配置间隔）。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><strong>交付物</strong>：AI 驱动的智能时间管理桌面应用，28 个 Tauri 命令。 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+  </ul>
+  <div class="callout">
+    <strong>M3 实现总结</strong><br>
+    AI 周报改为 OpenAI 兼容接口（支持 DeepSeek / OpenAI / Ollama 等），支持流式输出（SSE 逐 token 打印）。<br>
+    多模型配置系统：llm_configs 表持久化存储，支持添加/编辑/删除/设为默认/测试连接。<br>
+    周报页面上方可切换不同模型配置，生成时实时显示 AI 输出 + 闪烁光标。<br>
+    Git 模块：自动 init、配置 remote、推送前弹窗展示文件变更列表（含状态标签、勾选）。<br>
+    设置页 Git 区域改为三步引导式流程（初始化 → 配置地址 → 推送/拉取），状态自动检测。<br>
+    新增 Tauri 命令：llm_config_cmd(4) + git_list_files + git_get_remote + test_llm_connection + generate_weekly_summary_stream。<br>
+    已注册 Tauri 命令总数：28 个。
+  </div>
+
+  <h3>M4 — 测试、打磨 & 发布（第 7–8 周） <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);padding:2px 10px;border-radius:999px;font-size:12px;">已完成 2026-06-25</span></h3>
+  <ul>
+    <li><s>窗口配置优化：默认 1200x800，最小 900x600，居中打开，可调整大小。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>Rust 代码清理：移除所有未使用结构体，cargo check 零警告。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>全局 Toast 通知组件：成功/错误/信息三种类型，自动消失。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>空状态完善：各页面无数据时展示引导提示。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><s>前后端编译验证：vue-tsc 零错误 + cargo check 零警告。</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+    <li><strong>交付物</strong>：可直接发布的 v0.1.0 版本。 <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">DONE</span></li>
+  </ul>
+  <div class="callout">
+    <strong>M4 实现总结</strong><br>
+    窗口默认 1200x800，居中打开，支持缩放。<br>
+    Rust 代码零警告（移除 7 个未使用 struct）。<br>
+    新增 AppToast 全局通知组件，通过 provide/inject 供所有页面使用。<br>
+    各页面包含空状态引导提示。<br>
+    前后端编译：vue-tsc 零错误，cargo check 零警告。
+  </div>
+</section>
+
+<section id="dependencies">
+  <h2>9. 推荐依赖清单</h2>
+
+  <h3>9.1 前端依赖 (npm)</h3>
+  <table>
+    <thead><tr><th>包名</th><th>用途</th><th>大小</th></tr></thead>
+    <tbody>
+      <tr><td><code>vue-router</code></td><td>Vue 路由</td><td>~25KB</td></tr>
+      <tr><td><code>pinia</code></td><td>状态管理</td><td>~3KB</td></tr>
+      <tr><td><code>tdesign-vue-next</code></td><td>UI 组件库</td><td>~600KB</td></tr>
+      <tr><td><code>@tauri-apps/api</code></td><td>Tauri 前端桥接</td><td>~50KB</td></tr>
+      <tr><td><code>markdown-it</code></td><td>Markdown 解析渲染</td><td>~80KB</td></tr>
+      <tr><td><code>echarts</code></td><td>图表可视化</td><td>~900KB</td></tr>
+      <tr><td><code>dayjs</code></td><td>日期处理</td><td>~3KB</td></tr>
+      <tr><td><code>uuid</code></td><td>唯一 ID 生成</td><td>~2KB</td></tr>
+      <tr><td><code>fuse.js</code></td><td>全文模糊搜索</td><td>~15KB</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.2 Rust 依赖 (Cargo)</h3>
+  <table>
+    <thead><tr><th>crate</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><code>rusqlite</code></td><td>SQLite 绑定</td></tr>
+      <tr><td><code>serde</code> + <code>serde_json</code></td><td>序列化/反序列化</td></tr>
+      <tr><td><code>git2</code></td><td>Git 操作绑定</td></tr>
+      <tr><td><code>reqwest</code></td><td>HTTP 客户端</td></tr>
+      <tr><td><code>chrono</code></td><td>时间日期处理</td></tr>
+      <tr><td><code>uuid</code></td><td>UUID 生成</td></tr>
+      <tr><td><code>directories</code></td><td>跨平台目录管理</td></tr>
+      <tr><td><code>tokio</code></td><td>异步运行时（可选）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="risks">
+  <h2>10. 风险与注意事项</h2>
+
+  <table>
+    <thead><tr><th>风险</th><th>影响</th><th>缓解措施</th></tr></thead>
+    <tbody>
+      <tr><td>LLM API 调用不稳定 / 成本过高</td><td>周报生成失败或质量差</td><td>本地模板规则兜底；允许用户手动编辑</td></tr>
+      <tr><td>Git 同步冲突 / 数据丢失</td><td>笔记丢失或覆盖</td><td>自动备份 + 手动恢复</td></tr>
+      <tr><td>Tauri 版本升级兼容性</td><td>Tauri v2 不稳定 API 变更</td><td>锁定依赖版本 + 测试覆盖</td></tr>
+      <tr><td>SQLite 数据库损坏 / 锁库</td><td>数据丢失无法恢复</td><td>定期备份 + WAL 模式</td></tr>
+      <tr><td>大文件仓库性能问题</td><td>笔记搜索慢、编辑器卡顿</td><td>分页加载 + 索引优化</td></tr>
+      <tr><td>跨平台 UI 不一致</td><td>macOS 与 Windows 渲染差异</td><td>CSS 重置 + 平台测试</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="next-actions">
+  <h2>下一步行动</h2>
+  <ol>
+    <li><s>M1 基础框架搭建</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">已完成</span></li>
+    <li><s>M2 核心功能开发</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">已完成</span></li>
+    <li><s>M3 AI 集成 & Git 同步</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">已完成</span></li>
+    <li><s>M4 测试、打磨 & 发布</s> <span class="tag" style="background:var(--tag-green-bg);color:var(--tag-green-text);">已完成</span></li>
+    <li><strong>v0.1.0 开发完成</strong></li>
+  </ol>
+</section>
+</main>
+
+<footer>
+  <p>Flows v0.1.0 — 时间管理桌面应用开发计划 | 2026-06-25</p>
+</footer>
+
+</div>
+</body>
+</html>

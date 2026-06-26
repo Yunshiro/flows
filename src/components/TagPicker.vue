@@ -88,9 +88,9 @@ function onKeydown(e: KeyboardEvent) {
   flex-wrap: wrap;
   gap: 4px;
   padding: 5px 8px;
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #F7F6F3;
+  background: var(--bg-canvas);
   min-height: 32px;
 }
 
@@ -100,10 +100,10 @@ function onKeydown(e: KeyboardEvent) {
   gap: 2px;
   padding: 1px 6px;
   border-radius: 999px;
-  background: #F1F1EF;
-  color: #787774;
+  background: var(--tag-gray-bg);
+  color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 520;
+  font-weight: 500;
   text-transform: lowercase;
 }
 
@@ -116,7 +116,7 @@ function onKeydown(e: KeyboardEvent) {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: #9E9E9E;
+  color: var(--text-tertiary);
   font-size: 13px;
   cursor: pointer;
   line-height: 1;
@@ -139,7 +139,7 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 .tag-input::placeholder {
-  color: #9E9E9E;
+  color: var(--text-tertiary);
 }
 
 .tag-suggestions {
@@ -152,8 +152,8 @@ function onKeydown(e: KeyboardEvent) {
   flex-wrap: wrap;
   gap: 3px;
   padding: 6px 8px;
-  background: #FFFFFF;
-  border: 1px solid #EAEAEA;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 6px;
   margin-top: 3px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -161,10 +161,10 @@ function onKeydown(e: KeyboardEvent) {
 
 .tag-suggestion {
   padding: 2px 8px;
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: #FFFFFF;
-  color: #787774;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 11px;
   cursor: pointer;
@@ -172,7 +172,7 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 .tag-suggestion:hover {
-  border-color: #111111;
+  border-color: var(--accent);
   color: #111111;
 }
 </style>

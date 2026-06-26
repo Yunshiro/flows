@@ -106,32 +106,32 @@ function insertTodoLink(title: string) {
 <style scoped>
 .page { max-width: 700px; }
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-.page-title { font-size: 26px; font-weight: 620; letter-spacing: -0.025em; }
-.page-subtitle { font-size: 13px; color: #787774; margin-top: 2px; }
+.page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; }
+.page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-.btn-save { display: inline-flex; padding: 7px 16px; border: none; border-radius: 6px; background: #111111; color: #FFFFFF; font-family: var(--font-sans); font-size: 13px; font-weight: 520; cursor: pointer; transition: all 150ms ease; }
-.btn-save:hover { background: #333333; }
+.btn-save { display: inline-flex; padding: 7px 16px; border: none; border-radius: 6px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 150ms ease; }
+.btn-save:hover { background: var(--accent-hover); }
 
 .mood-row { display: flex; gap: 6px; margin-bottom: 14px; }
-.mood-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1px solid #EAEAEA; border-radius: 6px; background: #FFFFFF; font-family: var(--font-sans); font-size: 13px; color: #787774; cursor: pointer; transition: all 120ms ease; }
+.mood-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 120ms ease; }
 .mood-btn:hover { background: rgba(0,0,0,0.02); }
-.mood-btn.active { border-color: #111111; background: rgba(0,0,0,0.03); color: #111111; }
+.mood-btn.active { border-color: var(--accent); background: rgba(0,0,0,0.03); color: #111111; }
 .mood-sym { font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
 
 .linked-section { margin-top: 16px; }
-.section-title { font-size: 13px; font-weight: 580; margin-bottom: 8px; color: #111111; }
+.section-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #111111; }
 .linked-list { display: flex; flex-direction: column; gap: 4px; }
-.linked-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid #EAEAEA; border-radius: 6px; background: #FFFFFF; color: #787774; font-family: var(--font-sans); font-size: 12.5px; cursor: pointer; transition: all 100ms ease; width: 100%; text-align: left; }
-.linked-item:hover { border-color: #787774; color: #111111; }
-.linked-hint { margin-left: auto; font-size: 10px; color: #CECECE; }
-.linked-item:hover .linked-hint { color: #787774; }
+.linked-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12.5px; cursor: pointer; transition: all 100ms ease; width: 100%; text-align: left; }
+.linked-item:hover { border-color: var(--text-secondary); color: #111111; }
+.linked-hint { margin-left: auto; font-size: 10px; color: var(--text-disabled); }
+.linked-item:hover .linked-hint { color: var(--text-secondary); }
 
 .timeline { margin-top: 28px; display: flex; flex-direction: column; }
-.timeline-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #EAEAEA; }
-.timeline-date { font-family: var(--font-mono); font-size: 12px; color: #9E9E9E; min-width: 48px; }
+.timeline-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.timeline-date { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); min-width: 48px; }
 .timeline-mood { font-size: 11px; padding: 1px 6px; border-radius: 999px; flex-shrink: 0; }
-.mood--productive { background: #EDF3EC; color: #346538; }
-.mood--normal { background: #F1F1EF; color: #787774; }
-.mood--slacking { background: #FDEBEC; color: #9F2F2D; }
-.timeline-preview { font-size: 12.5px; color: #787774; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mood--productive { background: var(--tag-green-bg); color: var(--tag-green-text); }
+.mood--normal { background: var(--tag-gray-bg); color: var(--text-secondary); }
+.mood--slacking { background: var(--tag-red-bg); color: var(--tag-red-text); }
+.timeline-preview { font-size: 12.5px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>

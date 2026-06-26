@@ -32,14 +32,48 @@ provide('toast', toast)
 }
 
 :root {
-  --bg-canvas: #F7F6F3;
+  --bg-canvas: #F8F7F4;
   --bg-surface: #FFFFFF;
-  --border: #EAEAEA;
+  --bg-sidebar: #FAFAF8;
+  --border: #EDECEA;
   --text-primary: #111111;
-  --text-secondary: #787774;
-  --text-tertiary: #9E9E9E;
+  --text-secondary: #6B6B6B;
+  --text-tertiary: #9C9C9C;
+  --text-disabled: #D0D0D0;
+  --accent: #4B6BF5;
+  --accent-soft: #EEF1FD;
+  --accent-hover: #3B53D9;
+
+  --tag-red-bg: #FEF1F1;
+  --tag-red-text: #C53030;
+  --tag-yellow-bg: #FCF6E8;
+  --tag-yellow-text: #92600A;
+  --tag-blue-bg: #EDF3FE;
+  --tag-blue-text: #2B6CB0;
+  --tag-gray-bg: #F2F2F0;
+  --tag-gray-text: #6B6B6B;
+  --tag-green-bg: #EDF5EE;
+  --tag-green-text: #2F6E34;
+
+  --editor-toolbar-bg: #FAFAF8;
+  --code-block-text: #F9FAFB;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-dropdown: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-toast: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-dialog: 0 12px 40px rgba(0,0,0,0.10);
+  --shadow-sidebar: 1px 0 0 rgba(0,0,0,0.04), 4px 0 16px rgba(0,0,0,0.02);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
   --font-sans: 'SF Pro Display', 'Geist Sans', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Geist Mono', 'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace;
+  --font-mono: 'SF Mono', 'Geist Mono', 'JetBrains Mono', 'Cascadia Code', monospace;
+  font-family: var(--font-sans);
 }
 
 body {

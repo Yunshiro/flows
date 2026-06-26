@@ -117,8 +117,8 @@ async function handlePush() {
 .dialog {
   width: 480px;
   max-height: 70vh;
-  background: #FFFFFF;
-  border: 1px solid #EAEAEA;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -146,7 +146,7 @@ async function handlePush() {
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: #787774;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -157,7 +157,7 @@ async function handlePush() {
 .dialog-hint {
   padding: 20px;
   text-align: center;
-  color: #9E9E9E;
+  color: var(--text-tertiary);
   font-size: 13px;
 }
 
@@ -169,7 +169,7 @@ async function handlePush() {
 
 .file-toolbar {
   padding: 8px 0;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 4px;
 }
 
@@ -178,7 +178,7 @@ async function handlePush() {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #787774;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -208,10 +208,10 @@ async function handlePush() {
   text-align: center;
 }
 
-.status-M, .status-A { background: #EDF3EC; color: #346538; }
-.status-D { background: #FDEBEC; color: #9F2F2D; }
-.status-R { background: #E1F3FE; color: #1F6C9F; }
-.status-\? { background: #FBF3DB; color: #956400; }
+.status-M, .status-A { background: var(--tag-green-bg); color: var(--tag-green-text); }
+.status-D { background: var(--tag-red-bg); color: var(--tag-red-text); }
+.status-R { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+.status-\? { background: var(--tag-yellow-bg); color: var(--tag-yellow-text); }
 
 .file-path {
   font-family: var(--font-mono);
@@ -225,15 +225,15 @@ async function handlePush() {
   justify-content: flex-end;
   gap: 8px;
   padding: 14px 20px;
-  border-top: 1px solid #EAEAEA;
+  border-top: 1px solid var(--border);
 }
 
 .btn-cancel {
   padding: 7px 16px;
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #FFFFFF;
-  color: #787774;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 13px;
   cursor: pointer;
@@ -247,16 +247,16 @@ async function handlePush() {
   padding: 7px 18px;
   border: none;
   border-radius: 6px;
-  background: #111111;
-  color: #FFFFFF;
+  background: var(--accent);
+  color: var(--bg-surface);
   font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 520;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .btn-push:hover:not(:disabled) {
-  background: #333333;
+  background: var(--accent-hover);
 }
 
 .btn-push:disabled {

@@ -56,15 +56,15 @@ defineExpose({ show })
   padding: 10px 16px;
   border-radius: 7px;
   font-size: 13px;
-  font-weight: 480;
+  font-weight: 400;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   animation: slideIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 360px;
 }
 
-.toast--success { background: #EDF3EC; color: #346538; border: 1px solid #c8e6c9; }
-.toast--error { background: #FDEBEC; color: #9F2F2D; border: 1px solid #ffcdd2; }
-.toast--info { background: #E1F3FE; color: #1F6C9F; border: 1px solid #b3e5fc; }
+.toast--success { background: var(--tag-green-bg); color: var(--tag-green-text); border: 1px solid #c8e6c9; }
+.toast--error { background: var(--tag-red-bg); color: var(--tag-red-text); border: 1px solid #ffcdd2; }
+.toast--info { background: var(--tag-blue-bg); color: var(--tag-blue-text); border: 1px solid #b3e5fc; }
 
 .toast-icon { display: flex; align-items: center; flex-shrink: 0; }
 .toast-msg { flex: 1; line-height: 1.4; }

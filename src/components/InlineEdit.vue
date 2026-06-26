@@ -77,7 +77,7 @@ defineExpose({ startEdit })
   font-family: var(--font-sans);
   font-size: inherit;
   color: #111111;
-  background: #FFFFFF;
+  background: var(--bg-surface);
   outline: none;
 }
 </style>

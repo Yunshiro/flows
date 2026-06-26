@@ -239,70 +239,70 @@ const toolbarButtons = [
 
 <style scoped>
 .page-layout { display: flex; height: calc(100vh - 56px); margin: -28px; }
-.file-tree { width: 220px; border-right: 1px solid #EAEAEA; background: #FFFFFF; display: flex; flex-direction: column; overflow: hidden; }
+.file-tree { width: 220px; border-right: 1px solid var(--border); background: var(--bg-surface); display: flex; flex-direction: column; overflow: hidden; }
 .tree-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 14px 8px; }
-.tree-title { font-size: 14px; font-weight: 580; }
-.tree-add { width: 24px; height: 24px; border: 1px solid #EAEAEA; border-radius: 5px; background: #FFFFFF; color: #787774; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.tree-title { font-size: 14px; font-weight: 600; }
+.tree-add { width: 24px; height: 24px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-secondary); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .tree-add:hover { background: rgba(0,0,0,0.04); }
 
 .tree-create { padding: 0 14px 8px; }
 .tree-create-input { width: 100%; padding: 5px 8px; border: 1px solid #111111; border-radius: 4px; font-family: var(--font-sans); font-size: 12px; outline: none; }
 
 .tree-search { padding: 0 14px 8px; }
-.tree-search-input { width: 100%; padding: 5px 8px; border: 1px solid #EAEAEA; border-radius: 5px; background: #F7F6F3; font-family: var(--font-sans); font-size: 12px; outline: none; }
-.tree-search-input:focus { border-color: #787774; }
+.tree-search-input { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-canvas); font-family: var(--font-sans); font-size: 12px; outline: none; }
+.tree-search-input:focus { border-color: var(--text-secondary); }
 
 .tree-list { flex: 1; overflow-y: auto; padding: 4px 10px; }
 .tree-node { margin-bottom: 2px; }
-.tree-dir { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12.5px; font-weight: 520; color: #787774; }
-.tree-item { display: flex; align-items: center; gap: 7px; padding: 6px 8px 6px 20px; border-radius: 5px; cursor: pointer; color: #787774; font-size: 12.5px; transition: all 80ms ease; }
+.tree-dir { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
+.tree-item { display: flex; align-items: center; gap: 7px; padding: 6px 8px 6px 20px; border-radius: 5px; cursor: pointer; color: var(--text-secondary); font-size: 12.5px; transition: all 80ms ease; }
 .tree-item:hover { background: rgba(0,0,0,0.03); color: #111111; }
 .tree-item.active { background: rgba(0,0,0,0.05); color: #111111; font-weight: 500; }
 .tree-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-icon { flex-shrink: 0; opacity: 0.5; }
-.tree-empty { font-size: 12px; color: #9E9E9E; padding: 16px 14px; }
+.tree-empty { font-size: 12px; color: var(--text-tertiary); padding: 16px 14px; }
 
 /* Editor */
-.editor-area { flex: 1; display: flex; flex-direction: column; background: #FFFFFF; overflow: hidden; }
-.editor-empty { background: #F7F6F3; }
+.editor-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-surface); overflow: hidden; }
+.editor-empty { background: var(--bg-canvas); }
 
-.editor-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid #EAEAEA; background: #F9F9F8; flex-shrink: 0; }
+.editor-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid var(--border); background: var(--editor-toolbar-bg); flex-shrink: 0; }
 .editor-toolbar-left { display: flex; gap: 2px; }
 .editor-toolbar-right { display: flex; gap: 8px; align-items: center; }
 
-.toolbar-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 4px; background: transparent; color: #787774; font-family: 'Geist Mono', 'SF Mono', monospace; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.toolbar-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; cursor: pointer; }
 .toolbar-btn:hover { background: rgba(0,0,0,0.06); color: #111111; }
 
-.toggle-preview { padding: 4px 10px; border: 1px solid #EAEAEA; border-radius: 4px; background: #FFFFFF; color: #787774; font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
-.toggle-preview.active { background: #111111; color: #FFFFFF; border-color: #111111; }
+.toggle-preview { padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
+.toggle-preview.active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
 
-.btn-save { padding: 5px 14px; border: none; border-radius: 5px; background: #111111; color: #FFFFFF; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
-.btn-save:hover { background: #333333; }
+.btn-save { padding: 5px 14px; border: none; border-radius: 5px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-save:hover { background: var(--accent-hover); }
 
-.btn-delete { padding: 5px 10px; border: 1px solid #EAEAEA; border-radius: 5px; background: #FFFFFF; color: #9E9E9E; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
-.btn-delete:hover { background: #FDEBEC; color: #9F2F2D; border-color: #FDEBEC; }
+.btn-delete { padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-tertiary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-delete:hover { background: var(--tag-red-bg); color: var(--tag-red-text); border-color: var(--tag-red-bg); }
 
 .editor-body { flex: 1; display: flex; overflow: hidden; }
 .editor-textarea { flex: 1; padding: 18px 20px; border: none; font-family: var(--font-sans); font-size: 14px; line-height: 1.7; color: #111111; resize: none; outline: none; }
-.editor-textarea::placeholder { color: #9E9E9E; }
+.editor-textarea::placeholder { color: var(--text-tertiary); }
 .editor-preview { flex: 1; padding: 18px 20px; overflow-y: auto; font-size: 14px; line-height: 1.7; }
-.editor-preview :deep(h1) { font-size: 1.6em; margin: 0.5em 0 0.3em; font-weight: 620; }
+.editor-preview :deep(h1) { font-size: 1.6em; margin: 0.5em 0 0.3em; font-weight: 600; }
 .editor-preview :deep(h2) { font-size: 1.3em; margin: 0.5em 0 0.3em; font-weight: 600; }
-.editor-preview :deep(h3) { font-size: 1.1em; margin: 0.4em 0 0.2em; font-weight: 580; }
+.editor-preview :deep(h3) { font-size: 1.1em; margin: 0.4em 0 0.2em; font-weight: 600; }
 .editor-preview :deep(p) { margin: 0.4em 0; }
 .editor-preview :deep(ul), .editor-preview :deep(ol) { padding-left: 1.5em; margin: 0.4em 0; }
-.editor-preview :deep(code) { background: #F1F1EF; padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.88em; }
-.editor-preview :deep(pre) { background: #111111; color: #F9FAFB; padding: 14px; border-radius: 6px; overflow-x: auto; margin: 0.6em 0; }
+.editor-preview :deep(code) { background: var(--tag-gray-bg); padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.88em; }
+.editor-preview :deep(pre) { background: var(--accent); color: #F9FAFB; padding: 14px; border-radius: 6px; overflow-x: auto; margin: 0.6em 0; }
 .editor-preview :deep(pre code) { background: transparent; color: inherit; padding: 0; }
-.editor-preview :deep(blockquote) { border-left: 3px solid #EAEAEA; padding-left: 12px; color: #787774; margin: 0.6em 0; }
+.editor-preview :deep(blockquote) { border-left: 3px solid #EAEAEA; padding-left: 12px; color: var(--text-secondary); margin: 0.6em 0; }
 .editor-preview :deep(a) { color: #2563eb; cursor: pointer; }
 .editor-preview :deep(table) { border-collapse: collapse; width: 100%; }
-.editor-preview :deep(th), .editor-preview :deep(td) { border: 1px solid #EAEAEA; padding: 6px 10px; font-size: 0.93em; }
-.editor-preview :deep(hr) { border: none; border-top: 1px solid #EAEAEA; margin: 1em 0; }
+.editor-preview :deep(th), .editor-preview :deep(td) { border: 1px solid var(--border); padding: 6px 10px; font-size: 0.93em; }
+.editor-preview :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
 
-.editor-footer { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; border-top: 1px solid #EAEAEA; background: #F9F9F8; flex-shrink: 0; }
-.editor-path { font-family: var(--font-mono); font-size: 11px; color: #9E9E9E; }
-.editor-hint { font-size: 10px; color: #CECECE; }
+.editor-footer { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; border-top: 1px solid var(--border); background: var(--editor-toolbar-bg); flex-shrink: 0; }
+.editor-path { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
+.editor-hint { font-size: 10px; color: var(--text-disabled); }
 
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 100%; color: #9E9E9E; font-size: 13px; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 100%; color: var(--text-tertiary); font-size: 13px; }
 </style>

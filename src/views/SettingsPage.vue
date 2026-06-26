@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useSettingsStore } from '../stores/useSettingsStore'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, inject } from 'vue'
 import { noteApi } from '../api/notes'
 import { settingsApi } from '../api/settings'
+
+const toast = inject<(msg: string, type: 'success' | 'error' | 'info') => void>('toast', () => {})
 import { llmApi, type LlmConfig } from '../api/llm'
 import GitPushDialog from '../components/GitPushDialog.vue'
 
@@ -76,7 +78,7 @@ async function handleConfigRemote() {
 
 async function handlePull() {
   syncing.value = true
-  try { await noteApi.gitPull(); await checkGitState() } catch (e) { alert('拉取失败: ' + String(e)) } finally { syncing.value = false }
+  try { await noteApi.gitPull(); await checkGitState() } catch (e) { toast('拉取失败: ' + String(e), 'error') } finally { syncing.value = false }
 }
 
 function onPushed() { showPushDialog.value = false; checkGitState() }
@@ -110,11 +112,11 @@ async function handleSaveConfig() {
     })
     editingConfig.value = null
     await loadLlmConfigs()
-  } catch (e) { alert('保存失败: ' + String(e)) }
+  } catch (e) { toast('保存失败: ' + String(e), 'error') }
 }
 
 async function handleDeleteConfig(id: string) {
-  try { await llmApi.delete(id); await loadLlmConfigs() } catch (e) { alert('删除失败: ' + String(e)) }
+  try { await llmApi.delete(id); await loadLlmConfigs() } catch (e) { toast('删除失败: ' + String(e), 'error') }
 }
 
 async function handleSetDefault(id: string) {
@@ -123,7 +125,7 @@ async function handleSetDefault(id: string) {
   try {
     await llmApi.save({ ...cfg, isDefault: true })
     await loadLlmConfigs()
-  } catch (e) { alert('设置失败: ' + String(e)) }
+  } catch (e) { toast('设置失败: ' + String(e), 'error') }
 }
 
 async function handleTestLlm() {
@@ -171,7 +173,7 @@ async function handleTestLlm() {
             <span class="git-step-label">初始化本地仓库</span>
           </div>
           <button v-if="!gitInited" class="btn-step" @click="handleInit">初始化</button>
-          <span v-else class="step-done-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#346538" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></span>
+          <span v-else class="step-done-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tag-green-text)" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></span>
         </div>
         <div class="git-step" :class="{ disabled: !gitInited }">
           <span class="git-step-num">2</span>
@@ -277,91 +279,91 @@ async function handleTestLlm() {
 <style scoped>
 .page { max-width: 600px; }
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.page-title { font-size: 26px; font-weight: 620; letter-spacing: -0.025em; }
+.page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; }
 
-.btn-save { padding: 7px 18px; border: none; border-radius: 6px; background: #111111; color: #FFFFFF; font-family: var(--font-sans); font-size: 13px; font-weight: 520; cursor: pointer; }
-.btn-save:hover { background: #333333; }
+.btn-save { padding: 7px 18px; border: none; border-radius: 6px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; }
+.btn-save:hover { background: var(--accent-hover); }
 
-.card { background: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-.card-title { font-size: 14px; font-weight: 580; margin-bottom: 4px; }
-.card-desc { font-size: 12px; color: #9E9E9E; margin-bottom: 16px; }
-.card-desc code { font-family: var(--font-mono); font-size: 11px; background: #F1F1EF; padding: 1px 4px; border-radius: 3px; }
+.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.card-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 16px; }
+.card-desc code { font-family: var(--font-mono); font-size: 11px; background: var(--tag-gray-bg); padding: 1px 4px; border-radius: 3px; }
 .card-header-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
 
-.btn-add { padding: 6px 14px; border: 1px solid #EAEAEA; border-radius: 6px; background: #FFFFFF; color: #111111; font-family: var(--font-sans); font-size: 13px; cursor: pointer; white-space: nowrap; }
+.btn-add { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 13px; cursor: pointer; white-space: nowrap; }
 .btn-add:hover { background: rgba(0,0,0,0.03); }
 
 /* Git */
-.git-status-bar { display: flex; align-items: center; gap: 0; margin-bottom: 16px; padding: 10px 14px; background: #F7F6F3; border-radius: 6px; }
-.step-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #EAEAEA; color: #9E9E9E; flex-shrink: 0; }
-.step-dot.done { background: #346538; color: #FFFFFF; }
+.git-status-bar { display: flex; align-items: center; gap: 0; margin-bottom: 16px; padding: 10px 14px; background: var(--bg-canvas); border-radius: 6px; }
+.step-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #EAEAEA; color: var(--text-tertiary); flex-shrink: 0; }
+.step-dot.done { background: var(--tag-green-text); color: var(--bg-surface); }
 .step-line { flex: 1; height: 2px; background: #EAEAEA; margin: 0 4px; }
-.step-line.done { background: #346538; }
-.step-text { margin-left: 10px; font-size: 12px; color: #787774; flex-shrink: 0; }
+.step-line.done { background: var(--tag-green-text); }
+.step-text { margin-left: 10px; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
 
 .git-steps { display: flex; flex-direction: column; }
-.git-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F1F1EF; }
+.git-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--tag-gray-bg); }
 .git-step.disabled { opacity: 0.4; pointer-events: none; }
-.git-step-num { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #F1F1EF; color: #787774; flex-shrink: 0; }
+.git-step-num { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: var(--tag-gray-bg); color: var(--text-secondary); flex-shrink: 0; }
 .git-step-body { flex: 1; min-width: 0; }
-.git-step-label { font-size: 13px; font-weight: 520; display: block; }
-.git-step-desc { font-size: 11px; color: #9E9E9E; margin-top: 2px; display: block; }
+.git-step-label { font-size: 13px; font-weight: 500; display: block; }
+.git-step-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; display: block; }
 .step-done-icon { display: flex; align-items: center; flex-shrink: 0; }
 .git-remote-row { display: flex; gap: 6px; margin-top: 6px; }
-.git-remote-input { flex: 1; padding: 5px 8px; border: 1px solid #EAEAEA; border-radius: 5px; font-family: var(--font-mono); font-size: 12px; color: #111111; background: #F7F6F3; outline: none; }
-.git-remote-input:focus { border-color: #787774; }
+.git-remote-input { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-family: var(--font-mono); font-size: 12px; color: #111111; background: var(--bg-canvas); outline: none; }
+.git-remote-input:focus { border-color: var(--text-secondary); }
 .git-remote-input:disabled { opacity: 0.5; }
-.git-remote-input::placeholder { color: #CECECE; }
+.git-remote-input::placeholder { color: var(--text-disabled); }
 .git-step-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-.btn-step { padding: 5px 12px; border: 1px solid #EAEAEA; border-radius: 5px; background: #FFFFFF; color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 100ms ease; }
+.btn-step { padding: 5px 12px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 100ms ease; }
 .btn-step:hover:not(:disabled) { background: rgba(0,0,0,0.04); }
 .btn-step:disabled { opacity: 0.4; cursor: default; }
-.btn-step.primary { background: #111111; color: #FFFFFF; border-color: #111111; }
-.btn-step.primary:hover:not(:disabled) { background: #333333; }
+.btn-step.primary { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+.btn-step.primary:hover:not(:disabled) { background: var(--accent-hover); }
 
-.auto-sync-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F1EF; cursor: pointer; }
-.auto-sync-label { font-size: 12px; color: #787774; }
+.auto-sync-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--tag-gray-bg); cursor: pointer; }
+.auto-sync-label { font-size: 12px; color: var(--text-secondary); }
 
 /* Config form */
 .config-form { padding: 12px 0 0; }
 .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
 .field--row { flex-direction: row; align-items: center; gap: 8px; }
-.field-label { font-size: 12px; font-weight: 520; color: #787774; }
-.field-input { padding: 7px 10px; border: 1px solid #EAEAEA; border-radius: 6px; background: #F7F6F3; font-family: var(--font-sans); font-size: 13px; color: #111111; outline: none; }
-.field-input:focus { border-color: #787774; }
-.field-input::placeholder { color: #9E9E9E; }
+.field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.field-input { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-canvas); font-family: var(--font-sans); font-size: 13px; color: #111111; outline: none; }
+.field-input:focus { border-color: var(--text-secondary); }
+.field-input::placeholder { color: var(--text-tertiary); }
 
 .config-form-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
 .config-form-right { display: flex; gap: 6px; }
 
-.btn-test { padding: 6px 14px; border: 1px solid #EAEAEA; border-radius: 5px; background: #FFFFFF; color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-test { padding: 6px 14px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
 .btn-test:hover:not(:disabled) { background: rgba(0,0,0,0.03); }
 .btn-test:disabled { opacity: 0.4; cursor: default; }
 
-.btn-cancel { padding: 6px 14px; border: 1px solid #EAEAEA; border-radius: 5px; background: #FFFFFF; color: #787774; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-cancel { padding: 6px 14px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
 .btn-cancel:hover { background: rgba(0,0,0,0.03); }
 
-.test-result { margin-top: 8px; padding: 8px 12px; border-radius: 5px; background: #EDF3EC; color: #346538; font-size: 12px; line-height: 1.5; white-space: pre-wrap; }
-.test-result.error { background: #FDEBEC; color: #9F2F2D; }
+.test-result { margin-top: 8px; padding: 8px 12px; border-radius: 5px; background: var(--tag-green-bg); color: var(--tag-green-text); font-size: 12px; line-height: 1.5; white-space: pre-wrap; }
+.test-result.error { background: var(--tag-red-bg); color: var(--tag-red-text); }
 
 /* Config list */
 .config-list { display: flex; flex-direction: column; }
-.config-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F1EF; }
+.config-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--tag-gray-bg); }
 .config-item:last-child { border-bottom: none; }
 .config-item-main { flex: 1; min-width: 0; }
 .config-item-header { display: flex; align-items: center; gap: 8px; }
-.config-name { font-size: 13.5px; font-weight: 520; }
-.config-badge { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: #EDF3EC; color: #346538; }
-.config-detail { font-size: 11px; color: #9E9E9E; font-family: var(--font-mono); margin-top: 2px; display: block; }
+.config-name { font-size: 13.5px; font-weight: 500; }
+.config-badge { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: var(--tag-green-bg); color: var(--tag-green-text); }
+.config-detail { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 2px; display: block; }
 .config-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
-.btn-ghost-sm { padding: 4px 8px; border: 1px solid #EAEAEA; border-radius: 4px; background: #FFFFFF; color: #787774; font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
+.btn-ghost-sm { padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
 .btn-ghost-sm:hover { background: rgba(0,0,0,0.03); color: #111111; }
-.btn-ghost-sm.danger:hover { background: #FDEBEC; color: #9F2F2D; border-color: #FDEBEC; }
+.btn-ghost-sm.danger:hover { background: var(--tag-red-bg); color: var(--tag-red-text); border-color: var(--tag-red-bg); }
 
-.empty-hint { font-size: 13px; color: #9E9E9E; text-align: center; padding: 20px 0; }
+.empty-hint { font-size: 13px; color: var(--text-tertiary); text-align: center; padding: 20px 0; }
 
 .card--about { opacity: 0.6; }
-.about-text { font-size: 12px; color: #787774; line-height: 1.6; }
+.about-text { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
 </style>

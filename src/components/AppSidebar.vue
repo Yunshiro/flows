@@ -12,14 +12,8 @@ const navItems = [
   { key: 'notes', label: '笔记', path: '/notes' },
 ]
 
-const activeKey = computed(() => {
-  const seg = route.path.split('/')[1]
-  return seg || 'todos'
-})
-
-function navigate(path: string) {
-  router.push(path)
-}
+const activeKey = computed(() => route.path.split('/')[1] || 'todos')
+function navigate(path: string) { router.push(path) }
 </script>
 
 <template>
@@ -38,17 +32,11 @@ function navigate(path: string) {
         :key="item.key"
         :class="['nav-item', { active: activeKey === item.key }]"
         @click="navigate(item.path)"
-      >
-        <span class="nav-dot" />
-        {{ item.label }}
-      </button>
+      >{{ item.label }}</button>
     </nav>
 
     <div class="sidebar-footer">
-      <button class="nav-item settings-btn" @click="navigate('/settings')">
-        <span class="nav-dot" />
-        设置
-      </button>
+      <button :class="['nav-item', { active: activeKey === 'settings' }]" @click="navigate('/settings')">设置</button>
       <div class="sidebar-version">v0.1.0</div>
     </div>
   </aside>
@@ -60,9 +48,11 @@ function navigate(path: string) {
   flex-direction: column;
   width: 200px;
   height: 100vh;
-  padding: 20px 16px;
-  border-right: 1px solid #EAEAEA;
-  background: #FFFFFF;
+  padding: 20px 14px;
+  background: var(--bg-sidebar);
+  box-shadow: var(--shadow-sidebar);
+  position: relative;
+  z-index: 10;
   user-select: none;
 }
 
@@ -70,86 +60,53 @@ function navigate(path: string) {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 8px 24px;
-  color: #111111;
+  padding: 0 8px 20px;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
-.brand-icon {
-  flex-shrink: 0;
-}
+.brand-icon { flex-shrink: 0; }
+.brand-name { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; }
 
-.brand-name {
-  font-size: 17px;
-  font-weight: 620;
-  letter-spacing: -0.02em;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
+.sidebar-nav { display: flex; flex-direction: column; gap: 1px; flex: 1; }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 8px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 7px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #787774;
-  font-family: 'SF Pro Display', 'Geist Sans', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: 14px;
-  font-weight: 450;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
+  transition: all 150ms ease;
   text-align: left;
 }
 
-.nav-item:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #111111;
-}
+.nav-item:hover { background: rgba(0,0,0,0.04); color: var(--text-primary); }
 
 .nav-item.active {
-  background: rgba(0, 0, 0, 0.06);
-  color: #111111;
-  font-weight: 520;
-}
-
-.nav-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: transparent;
-  transition: background 150ms ease;
-  flex-shrink: 0;
-}
-
-.nav-item.active .nav-dot {
-  background: #111111;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .sidebar-footer {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   padding-top: 12px;
-  border-top: 1px solid #EAEAEA;
-}
-
-.settings-btn {
-  font-size: 13px;
+  border-top: 1px solid var(--border);
 }
 
 .sidebar-version {
-  font-family: 'Geist Mono', 'SF Mono', 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #9E9E9E;
-  padding: 4px 10px 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+  padding: 6px 10px 0;
 }
 </style>

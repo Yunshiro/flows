@@ -91,10 +91,10 @@ const toolbarItems = [
 
 <style scoped>
 .md-editor {
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  background: #FFFFFF;
+  background: var(--bg-surface);
   display: flex;
   flex-direction: column;
 }
@@ -104,8 +104,8 @@ const toolbarItems = [
   align-items: center;
   justify-content: space-between;
   padding: 6px 8px;
-  border-bottom: 1px solid #EAEAEA;
-  background: #F9F9F8;
+  border-bottom: 1px solid var(--border);
+  background: var(--editor-toolbar-bg);
 }
 
 .md-toolbar-actions {
@@ -122,8 +122,8 @@ const toolbarItems = [
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: #787774;
-  font-family: 'Geist Mono', 'SF Mono', monospace;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -137,10 +137,10 @@ const toolbarItems = [
 
 .md-toggle {
   padding: 4px 10px;
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--border);
   border-radius: 4px;
-  background: #FFFFFF;
-  color: #787774;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 11px;
   cursor: pointer;
@@ -148,9 +148,9 @@ const toolbarItems = [
 }
 
 .md-toggle.active {
-  background: #111111;
-  color: #FFFFFF;
-  border-color: #111111;
+  background: var(--accent);
+  color: var(--bg-surface);
+  border-color: var(--accent);
 }
 
 .md-body {
@@ -177,7 +177,7 @@ const toolbarItems = [
 }
 
 .md-textarea::placeholder {
-  color: #9E9E9E;
+  color: var(--text-tertiary);
 }
 
 .md-preview {
@@ -189,21 +189,21 @@ const toolbarItems = [
   color: #111111;
 }
 
-.md-preview :deep(h1) { font-size: 1.6em; margin: 0.6em 0 0.3em; font-weight: 620; }
+.md-preview :deep(h1) { font-size: 1.6em; margin: 0.6em 0 0.3em; font-weight: 600; }
 .md-preview :deep(h2) { font-size: 1.3em; margin: 0.6em 0 0.3em; font-weight: 600; }
-.md-preview :deep(h3) { font-size: 1.1em; margin: 0.5em 0 0.2em; font-weight: 580; }
+.md-preview :deep(h3) { font-size: 1.1em; margin: 0.5em 0 0.2em; font-weight: 600; }
 .md-preview :deep(p) { margin: 0.4em 0; }
 .md-preview :deep(ul), .md-preview :deep(ol) { padding-left: 1.5em; margin: 0.4em 0; }
 .md-preview :deep(li) { margin: 0.2em 0; }
 .md-preview :deep(code) {
-  background: #F1F1EF;
+  background: var(--tag-gray-bg);
   padding: 1px 5px;
   border-radius: 3px;
   font-family: var(--font-mono);
   font-size: 0.88em;
 }
 .md-preview :deep(pre) {
-  background: #111111;
+  background: var(--accent);
   color: #F9FAFB;
   padding: 14px;
   border-radius: 6px;
@@ -218,11 +218,11 @@ const toolbarItems = [
 .md-preview :deep(blockquote) {
   border-left: 3px solid #EAEAEA;
   padding-left: 12px;
-  color: #787774;
+  color: var(--text-secondary);
   margin: 0.6em 0;
 }
 .md-preview :deep(a) { color: #2563eb; }
-.md-preview :deep(hr) { border: none; border-top: 1px solid #EAEAEA; margin: 1em 0; }
+.md-preview :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
 .md-preview :deep(table) { border-collapse: collapse; width: 100%; margin: 0.6em 0; }
-.md-preview :deep(th), .md-preview :deep(td) { border: 1px solid #EAEAEA; padding: 6px 10px; text-align: left; font-size: 0.93em; }
+.md-preview :deep(th), .md-preview :deep(td) { border: 1px solid var(--border); padding: 6px 10px; text-align: left; font-size: 0.93em; }
 </style>

@@ -135,9 +135,10 @@ export async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>
       return {
         notesPath: '',
         gitRemoteUrl: '',
-        gitBranch: 'main',
+        gitBranch: '',
         autoSyncEnabled: false,
         autoSyncIntervalMinutes: 30,
+        theme: 'system',
         llmProvider: 'claude',
         llmApiKey: '',
         llmModel: 'claude-opus-4-7',
@@ -287,6 +288,10 @@ export async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>
       return '浏览器模式不支持 Git 操作' as T
     case 'git_set_remote':
       return '浏览器模式不支持 Git 操作' as T
+    case 'git_checkout_branch':
+      return '浏览器模式不支持 Git 操作' as T
+    case 'git_list_branches':
+      return [] as T
     case 'git_push':
       return '浏览器模式不支持 Git 操作' as T
     case 'git_pull':

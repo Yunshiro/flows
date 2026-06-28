@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSettingsStore } from '../stores/useSettingsStore'
-import { onMounted, onUnmounted, ref, inject } from 'vue'
+import { computed, onMounted, onUnmounted, ref, inject } from 'vue'
 import { noteApi } from '../api/notes'
 import { settingsApi } from '../api/settings'
 
@@ -15,6 +15,7 @@ const gitInited = ref(false)
 const gitHasRemote = ref(false)
 const syncing = ref(false)
 const showPushDialog = ref(false)
+const branchOptions = ref<string[]>([])
 let syncTimer: ReturnType<typeof setInterval> | null = null
 
 // LLM configs
@@ -30,6 +31,14 @@ const emptyConfig = (): Partial<LlmConfig> => ({
   model: 'deepseek-chat',
   isDefault: false,
 })
+
+const syncBranch = computed(() => store.settings.gitBranch.trim())
+const canSync = computed(() => gitHasRemote.value && !!syncBranch.value)
+const themeOptions = [
+  { value: 'system', label: '跟随系统' },
+  { value: 'light', label: '亮色' },
+  { value: 'dark', label: '暗色' },
+] as const
 
 onMounted(async () => {
   await store.loadSettings()
@@ -49,10 +58,17 @@ async function checkGitState() {
     const s = await noteApi.gitStatus()
     gitStatus.value = s
     gitInited.value = !s.includes('未初始化')
-    gitHasRemote.value = s.includes('干净') || s.includes('待同步')
+    gitHasRemote.value = false
     if (gitInited.value) {
       const remoteUrl = await noteApi.gitGetRemote()
+      gitHasRemote.value = !!remoteUrl
       if (remoteUrl && !store.settings.gitRemoteUrl) store.settings.gitRemoteUrl = remoteUrl
+      branchOptions.value = await noteApi.gitListBranches()
+      if (!store.settings.gitBranch && branchOptions.value.length > 0) {
+        store.settings.gitBranch = branchOptions.value[0]
+      }
+    } else {
+      branchOptions.value = []
     }
   } catch {
     gitStatus.value = 'Git 不可用'
@@ -66,8 +82,13 @@ async function handleSave() {
   if (store.settings.autoSyncEnabled) startAutoSync(); else stopAutoSync()
 }
 
+async function handleThemeChange(theme: 'system' | 'light' | 'dark') {
+  store.settings.theme = theme
+  await store.saveSettings({ theme })
+}
+
 async function handleInit() {
-  try { const msg = await noteApi.gitInit(); gitStatus.value = msg; gitInited.value = true } catch (e) { gitStatus.value = '失败: ' + String(e) }
+  try { const msg = await noteApi.gitInit(); gitStatus.value = msg; gitInited.value = true; await checkGitState() } catch (e) { gitStatus.value = '失败: ' + String(e) }
 }
 
 async function handleConfigRemote() {
@@ -76,18 +97,38 @@ async function handleConfigRemote() {
   try { await noteApi.gitSetRemote(url); await checkGitState() } catch (e) { gitStatus.value = '失败: ' + String(e) }
 }
 
+async function handleSwitchBranch() {
+  const branch = syncBranch.value
+  if (!branch) {
+    toast('请先选择或填写同步分支', 'error')
+    return
+  }
+  syncing.value = true
+  try {
+    await store.saveSettings({ gitBranch: branch })
+    const msg = await noteApi.gitCheckoutBranch(branch)
+    gitStatus.value = msg
+    await checkGitState()
+  } catch (e) {
+    toast('切换分支失败: ' + String(e), 'error')
+  } finally {
+    syncing.value = false
+  }
+}
+
 async function handlePull() {
   syncing.value = true
-  try { await noteApi.gitPull(); await checkGitState() } catch (e) { toast('拉取失败: ' + String(e), 'error') } finally { syncing.value = false }
+  try { await noteApi.gitPull(syncBranch.value); await checkGitState() } catch (e) { toast('拉取失败: ' + String(e), 'error') } finally { syncing.value = false }
 }
 
 function onPushed() { showPushDialog.value = false; checkGitState() }
 
 function startAutoSync() {
   stopAutoSync()
+  if (!syncBranch.value) return
   const minutes = Math.max(1, store.settings.autoSyncIntervalMinutes || 30)
   syncTimer = setInterval(async () => {
-    try { await noteApi.gitPull(); await noteApi.gitPush(); gitStatus.value = '自动同步 ' + new Date().toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }) } catch { /* */ }
+    try { await noteApi.gitPull(syncBranch.value); await noteApi.gitPush(syncBranch.value); gitStatus.value = '自动同步 ' + new Date().toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }) } catch { /* */ }
   }, minutes * 60 * 1000)
 }
 
@@ -148,6 +189,25 @@ async function handleTestLlm() {
 
     <!-- Notes storage -->
     <section class="card">
+      <div class="card-header-row compact">
+        <div>
+          <h3 class="card-title">外观</h3>
+          <p class="card-desc">选择 Flows 的界面主题</p>
+        </div>
+        <div class="theme-switch" role="group" aria-label="主题切换">
+          <button
+            v-for="option in themeOptions"
+            :key="option.value"
+            :class="['theme-option', { active: store.settings.theme === option.value }]"
+            @click="handleThemeChange(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
       <h3 class="card-title">笔记存储</h3>
       <p class="card-desc">Markdown 笔记保存在本地 <code>~/flows-notes/</code> 目录</p>
     </section>
@@ -178,10 +238,23 @@ async function handleTestLlm() {
         <div class="git-step" :class="{ disabled: !gitInited }">
           <span class="git-step-num">2</span>
           <div class="git-step-body">
-            <span class="git-step-label">配置远程仓库地址</span>
+            <span class="git-step-label">配置远程仓库与分支</span>
             <div class="git-remote-row">
               <input v-model="store.settings.gitRemoteUrl" class="git-remote-input" placeholder="https://github.com/you/notes.git" :disabled="!gitInited" />
               <button class="btn-step" :disabled="!gitInited || !store.settings.gitRemoteUrl.trim()" @click="handleConfigRemote">配置</button>
+            </div>
+            <div class="git-remote-row">
+              <input
+                v-model.trim="store.settings.gitBranch"
+                class="git-remote-input"
+                list="git-branch-options"
+                placeholder="选择或输入分支名，例如 master / notes"
+                :disabled="!gitInited"
+              />
+              <datalist id="git-branch-options">
+                <option v-for="branch in branchOptions" :key="branch" :value="branch" />
+              </datalist>
+              <button class="btn-step" :disabled="!gitInited || !syncBranch || syncing" @click="handleSwitchBranch">切换</button>
             </div>
           </div>
         </div>
@@ -192,14 +265,14 @@ async function handleTestLlm() {
             <span class="git-step-desc" v-if="gitStatus">{{ gitStatus }}</span>
           </div>
           <div class="git-step-actions">
-            <button class="btn-step" :disabled="!gitHasRemote || syncing" @click="handlePull">拉取</button>
-            <button class="btn-step primary" :disabled="!gitHasRemote || syncing" @click="showPushDialog = true">推送</button>
+            <button class="btn-step" :disabled="!canSync || syncing" @click="handlePull">拉取</button>
+            <button class="btn-step primary" :disabled="!canSync || syncing" @click="showPushDialog = true">推送</button>
           </div>
         </div>
       </div>
 
       <label class="auto-sync-row">
-        <input type="checkbox" v-model="store.settings.autoSyncEnabled" :disabled="!gitHasRemote" />
+        <input type="checkbox" v-model="store.settings.autoSyncEnabled" :disabled="!canSync" />
         <span class="auto-sync-label">自动同步（每 {{ store.settings.autoSyncIntervalMinutes }} 分钟）</span>
       </label>
     </section>
@@ -272,32 +345,38 @@ async function handleTestLlm() {
       <p class="about-text">Flows v0.1.0 — Tauri v2 + Vue 3 + TypeScript + Rust<br>SQLite: ~/.flows/flows.db | 笔记: ~/flows-notes/</p>
     </section>
 
-    <GitPushDialog v-if="showPushDialog" @close="showPushDialog = false" @pushed="onPushed" />
+    <GitPushDialog v-if="showPushDialog" :branch="syncBranch" @close="showPushDialog = false" @pushed="onPushed" />
   </div>
 </template>
 
 <style scoped>
-.page { max-width: 600px; }
+.page { max-width: 720px; }
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; }
+.page-title { font-size: 32px; font-weight: 760; letter-spacing: -0.02em; line-height: 1.08; }
 
-.btn-save { padding: 7px 18px; border: none; border-radius: 6px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; }
+.btn-save { padding: 8px 18px; border: none; border-radius: 10px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 22px rgba(var(--accent-rgb), 0.18); }
 .btn-save:hover { background: var(--accent-hover); }
 
-.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
-.card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.card { background: rgba(var(--bg-surface-rgb), 0.78); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); backdrop-filter: blur(18px); }
+.card-title { font-size: 14px; font-weight: 680; margin-bottom: 4px; color: var(--text-primary); }
 .card-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 16px; }
 .card-desc code { font-family: var(--font-mono); font-size: 11px; background: var(--tag-gray-bg); padding: 1px 4px; border-radius: 3px; }
 .card-header-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.card-header-row.compact { align-items: center; margin-bottom: 0; gap: 18px; }
 
-.btn-add { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 13px; cursor: pointer; white-space: nowrap; }
-.btn-add:hover { background: rgba(0,0,0,0.03); }
+.theme-switch { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-muted); }
+.theme-option { padding: 6px 10px; border: none; border-radius: 7px; background: transparent; color: var(--text-secondary); font-size: 12px; font-family: var(--font-sans); cursor: pointer; }
+.theme-option:hover { color: var(--text-primary); background: var(--surface-hover); }
+.theme-option.active { color: var(--accent); background: var(--bg-surface); box-shadow: var(--shadow-xs); font-weight: 650; }
+
+.btn-add { padding: 6px 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-surface); color: var(--text-primary); font-family: var(--font-sans); font-size: 13px; cursor: pointer; white-space: nowrap; }
+.btn-add:hover { background: var(--surface-hover); }
 
 /* Git */
-.git-status-bar { display: flex; align-items: center; gap: 0; margin-bottom: 16px; padding: 10px 14px; background: var(--bg-canvas); border-radius: 6px; }
-.step-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: #EAEAEA; color: var(--text-tertiary); flex-shrink: 0; }
-.step-dot.done { background: var(--tag-green-text); color: var(--bg-surface); }
-.step-line { flex: 1; height: 2px; background: #EAEAEA; margin: 0 4px; }
+.git-status-bar { display: flex; align-items: center; gap: 0; margin-bottom: 16px; padding: 10px 14px; background: var(--bg-muted); border-radius: 10px; }
+.step-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; background: var(--tag-gray-bg); color: var(--text-tertiary); flex-shrink: 0; }
+.step-dot.done { background: var(--tag-green-text); color: var(--accent-contrast); }
+.step-line { flex: 1; height: 2px; background: var(--tag-gray-bg); margin: 0 4px; }
 .step-line.done { background: var(--tag-green-text); }
 .step-text { margin-left: 10px; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
 
@@ -310,16 +389,16 @@ async function handleTestLlm() {
 .git-step-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; display: block; }
 .step-done-icon { display: flex; align-items: center; flex-shrink: 0; }
 .git-remote-row { display: flex; gap: 6px; margin-top: 6px; }
-.git-remote-input { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-family: var(--font-mono); font-size: 12px; color: #111111; background: var(--bg-canvas); outline: none; }
-.git-remote-input:focus { border-color: var(--text-secondary); }
+.git-remote-input { flex: 1; padding: 6px 9px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); background: var(--bg-muted); outline: none; }
+.git-remote-input:focus { border-color: var(--accent); background: var(--bg-surface); }
 .git-remote-input:disabled { opacity: 0.5; }
 .git-remote-input::placeholder { color: var(--text-disabled); }
 .git-step-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
-.btn-step { padding: 5px 12px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 100ms ease; }
-.btn-step:hover:not(:disabled) { background: rgba(0,0,0,0.04); }
+.btn-step { padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.btn-step:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--border-strong); }
 .btn-step:disabled { opacity: 0.4; cursor: default; }
-.btn-step.primary { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+.btn-step.primary { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
 .btn-step.primary:hover:not(:disabled) { background: var(--accent-hover); }
 
 .auto-sync-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--tag-gray-bg); cursor: pointer; }
@@ -330,19 +409,19 @@ async function handleTestLlm() {
 .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
 .field--row { flex-direction: row; align-items: center; gap: 8px; }
 .field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
-.field-input { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-canvas); font-family: var(--font-sans); font-size: 13px; color: #111111; outline: none; }
-.field-input:focus { border-color: var(--text-secondary); }
+.field-input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-muted); font-family: var(--font-sans); font-size: 13px; color: var(--text-primary); outline: none; }
+.field-input:focus { border-color: var(--accent); background: var(--bg-surface); }
 .field-input::placeholder { color: var(--text-tertiary); }
 
 .config-form-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
 .config-form-right { display: flex; gap: 6px; }
 
-.btn-test { padding: 6px 14px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
-.btn-test:hover:not(:disabled) { background: rgba(0,0,0,0.03); }
+.btn-test { padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-test:hover:not(:disabled) { background: var(--surface-hover); }
 .btn-test:disabled { opacity: 0.4; cursor: default; }
 
-.btn-cancel { padding: 6px 14px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
-.btn-cancel:hover { background: rgba(0,0,0,0.03); }
+.btn-cancel { padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-cancel:hover { background: var(--surface-hover); }
 
 .test-result { margin-top: 8px; padding: 8px 12px; border-radius: 5px; background: var(--tag-green-bg); color: var(--tag-green-text); font-size: 12px; line-height: 1.5; white-space: pre-wrap; }
 .test-result.error { background: var(--tag-red-bg); color: var(--tag-red-text); }
@@ -358,8 +437,8 @@ async function handleTestLlm() {
 .config-detail { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 2px; display: block; }
 .config-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
-.btn-ghost-sm { padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
-.btn-ghost-sm:hover { background: rgba(0,0,0,0.03); color: #111111; }
+.btn-ghost-sm { padding: 4px 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
+.btn-ghost-sm:hover { background: var(--surface-hover); color: var(--text-primary); }
 .btn-ghost-sm.danger:hover { background: var(--tag-red-bg); color: var(--tag-red-text); border-color: var(--tag-red-bg); }
 
 .empty-hint { font-size: 13px; color: var(--text-tertiary); text-align: center; padding: 20px 0; }

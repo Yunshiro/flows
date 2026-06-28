@@ -238,26 +238,26 @@ const toolbarButtons = [
 </template>
 
 <style scoped>
-.page-layout { display: flex; height: calc(100vh - 56px); margin: -28px; }
-.file-tree { width: 220px; border-right: 1px solid var(--border); background: var(--bg-surface); display: flex; flex-direction: column; overflow: hidden; }
+.page-layout { display: flex; height: calc(100dvh - 64px); margin: -32px; }
+.file-tree { width: 238px; border-right: 1px solid var(--border); background: rgba(var(--bg-surface-rgb), 0.72); backdrop-filter: blur(18px); display: flex; flex-direction: column; overflow: hidden; }
 .tree-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 14px 8px; }
 .tree-title { font-size: 14px; font-weight: 600; }
-.tree-add { width: 24px; height: 24px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-secondary); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.tree-add:hover { background: rgba(0,0,0,0.04); }
+.tree-add { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); color: var(--text-secondary); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.tree-add:hover { background: var(--surface-hover); color: var(--text-primary); }
 
 .tree-create { padding: 0 14px 8px; }
-.tree-create-input { width: 100%; padding: 5px 8px; border: 1px solid #111111; border-radius: 4px; font-family: var(--font-sans); font-size: 12px; outline: none; }
+.tree-create-input { width: 100%; padding: 6px 9px; border: 1px solid var(--accent); border-radius: 8px; background: var(--bg-surface); color: var(--text-primary); font-family: var(--font-sans); font-size: 12px; outline: none; }
 
 .tree-search { padding: 0 14px 8px; }
-.tree-search-input { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-canvas); font-family: var(--font-sans); font-size: 12px; outline: none; }
-.tree-search-input:focus { border-color: var(--text-secondary); }
+.tree-search-input { width: 100%; padding: 6px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-muted); color: var(--text-primary); font-family: var(--font-sans); font-size: 12px; outline: none; }
+.tree-search-input:focus { border-color: var(--accent); background: var(--bg-surface); }
 
 .tree-list { flex: 1; overflow-y: auto; padding: 4px 10px; }
 .tree-node { margin-bottom: 2px; }
 .tree-dir { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
-.tree-item { display: flex; align-items: center; gap: 7px; padding: 6px 8px 6px 20px; border-radius: 5px; cursor: pointer; color: var(--text-secondary); font-size: 12.5px; transition: all 80ms ease; }
-.tree-item:hover { background: rgba(0,0,0,0.03); color: #111111; }
-.tree-item.active { background: rgba(0,0,0,0.05); color: #111111; font-weight: 500; }
+.tree-item { display: flex; align-items: center; gap: 7px; padding: 7px 8px 7px 20px; border-radius: 8px; cursor: pointer; color: var(--text-secondary); font-size: 12.5px; }
+.tree-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+.tree-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .tree-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-icon { flex-shrink: 0; opacity: 0.5; }
 .tree-empty { font-size: 12px; color: var(--text-tertiary); padding: 16px 14px; }
@@ -270,20 +270,20 @@ const toolbarButtons = [
 .editor-toolbar-left { display: flex; gap: 2px; }
 .editor-toolbar-right { display: flex; gap: 8px; align-items: center; }
 
-.toolbar-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; cursor: pointer; }
-.toolbar-btn:hover { background: rgba(0,0,0,0.06); color: #111111; }
+.toolbar-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; border-radius: 7px; background: transparent; color: var(--text-secondary); font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.toolbar-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
 
 .toggle-preview { padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 11px; cursor: pointer; }
-.toggle-preview.active { background: var(--accent); color: var(--bg-surface); border-color: var(--accent); }
+.toggle-preview.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
 
-.btn-save { padding: 5px 14px; border: none; border-radius: 5px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
+.btn-save { padding: 5px 14px; border: none; border-radius: 8px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
 .btn-save:hover { background: var(--accent-hover); }
 
 .btn-delete { padding: 5px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg-surface); color: var(--text-tertiary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; }
 .btn-delete:hover { background: var(--tag-red-bg); color: var(--tag-red-text); border-color: var(--tag-red-bg); }
 
 .editor-body { flex: 1; display: flex; overflow: hidden; }
-.editor-textarea { flex: 1; padding: 18px 20px; border: none; font-family: var(--font-sans); font-size: 14px; line-height: 1.7; color: #111111; resize: none; outline: none; }
+.editor-textarea { flex: 1; padding: 20px 22px; border: none; font-family: var(--font-sans); font-size: 14px; line-height: 1.7; color: var(--text-primary); background: var(--bg-surface); resize: none; outline: none; }
 .editor-textarea::placeholder { color: var(--text-tertiary); }
 .editor-preview { flex: 1; padding: 18px 20px; overflow-y: auto; font-size: 14px; line-height: 1.7; }
 .editor-preview :deep(h1) { font-size: 1.6em; margin: 0.5em 0 0.3em; font-weight: 600; }
@@ -292,10 +292,10 @@ const toolbarButtons = [
 .editor-preview :deep(p) { margin: 0.4em 0; }
 .editor-preview :deep(ul), .editor-preview :deep(ol) { padding-left: 1.5em; margin: 0.4em 0; }
 .editor-preview :deep(code) { background: var(--tag-gray-bg); padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.88em; }
-.editor-preview :deep(pre) { background: var(--accent); color: #F9FAFB; padding: 14px; border-radius: 6px; overflow-x: auto; margin: 0.6em 0; }
+.editor-preview :deep(pre) { background: #16231e; color: var(--code-block-text); padding: 14px; border-radius: 8px; overflow-x: auto; margin: 0.6em 0; }
 .editor-preview :deep(pre code) { background: transparent; color: inherit; padding: 0; }
-.editor-preview :deep(blockquote) { border-left: 3px solid #EAEAEA; padding-left: 12px; color: var(--text-secondary); margin: 0.6em 0; }
-.editor-preview :deep(a) { color: #2563eb; cursor: pointer; }
+.editor-preview :deep(blockquote) { border-left: 3px solid var(--border-strong); padding-left: 12px; color: var(--text-secondary); margin: 0.6em 0; }
+.editor-preview :deep(a) { color: var(--accent); cursor: pointer; }
 .editor-preview :deep(table) { border-collapse: collapse; width: 100%; }
 .editor-preview :deep(th), .editor-preview :deep(td) { border: 1px solid var(--border); padding: 6px 10px; font-size: 0.93em; }
 .editor-preview :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 1em 0; }

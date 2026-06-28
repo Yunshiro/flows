@@ -8,6 +8,7 @@ export interface AppSettings {
   gitBranch: string
   autoSyncEnabled: boolean
   autoSyncIntervalMinutes: number
+  theme: 'system' | 'light' | 'dark'
   llmBaseUrl: string
   llmApiKey: string
   llmModel: string
@@ -16,9 +17,10 @@ export interface AppSettings {
 const defaults: AppSettings = {
   notesPath: '',
   gitRemoteUrl: '',
-  gitBranch: 'main',
+  gitBranch: '',
   autoSyncEnabled: false,
   autoSyncIntervalMinutes: 30,
+  theme: 'system',
   llmBaseUrl: 'https://api.openai.com/v1',
   llmApiKey: '',
   llmModel: 'deepseek-chat',

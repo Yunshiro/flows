@@ -92,18 +92,20 @@ const toolbarItems = [
 <style scoped>
 .md-editor {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  background: var(--bg-surface);
+  background: rgba(var(--bg-surface-rgb), 0.78);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(18px);
 }
 
 .md-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
+  padding: 7px 8px;
   border-bottom: 1px solid var(--border);
   background: var(--editor-toolbar-bg);
 }
@@ -120,36 +122,34 @@ const toolbarItems = [
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 100ms ease;
 }
 
 .md-toolbar-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
-  color: #111111;
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .md-toggle {
   padding: 4px 10px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 7px;
   background: var(--bg-surface);
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 11px;
   cursor: pointer;
-  transition: all 100ms ease;
 }
 
 .md-toggle.active {
   background: var(--accent);
-  color: var(--bg-surface);
+  color: var(--accent-contrast);
   border-color: var(--accent);
 }
 
@@ -170,7 +170,7 @@ const toolbarItems = [
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.7;
-  color: #111111;
+  color: var(--text-primary);
   resize: vertical;
   outline: none;
   background: transparent;
@@ -186,7 +186,7 @@ const toolbarItems = [
   overflow-y: auto;
   font-size: 14px;
   line-height: 1.7;
-  color: #111111;
+  color: var(--text-primary);
 }
 
 .md-preview :deep(h1) { font-size: 1.6em; margin: 0.6em 0 0.3em; font-weight: 600; }
@@ -203,7 +203,7 @@ const toolbarItems = [
   font-size: 0.88em;
 }
 .md-preview :deep(pre) {
-  background: var(--accent);
+  background: #16231e;
   color: #F9FAFB;
   padding: 14px;
   border-radius: 6px;
@@ -216,12 +216,12 @@ const toolbarItems = [
   padding: 0;
 }
 .md-preview :deep(blockquote) {
-  border-left: 3px solid #EAEAEA;
+  border-left: 3px solid var(--border-strong);
   padding-left: 12px;
   color: var(--text-secondary);
   margin: 0.6em 0;
 }
-.md-preview :deep(a) { color: #2563eb; }
+.md-preview :deep(a) { color: var(--accent); }
 .md-preview :deep(hr) { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
 .md-preview :deep(table) { border-collapse: collapse; width: 100%; margin: 0.6em 0; }
 .md-preview :deep(th), .md-preview :deep(td) { border: 1px solid var(--border); padding: 6px 10px; text-align: left; font-size: 0.93em; }

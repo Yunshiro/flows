@@ -104,25 +104,25 @@ function insertTodoLink(title: string) {
 </template>
 
 <style scoped>
-.page { max-width: 700px; }
-.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-.page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; }
+.page { max-width: 820px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
+.page-title { font-size: 32px; font-weight: 760; letter-spacing: -0.02em; line-height: 1.08; }
 .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-.btn-save { display: inline-flex; padding: 7px 16px; border: none; border-radius: 6px; background: var(--accent); color: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 150ms ease; }
+.btn-save { display: inline-flex; padding: 8px 16px; border: none; border-radius: 10px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 22px rgba(var(--accent-rgb), 0.18); }
 .btn-save:hover { background: var(--accent-hover); }
 
-.mood-row { display: flex; gap: 6px; margin-bottom: 14px; }
-.mood-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: all 120ms ease; }
-.mood-btn:hover { background: rgba(0,0,0,0.02); }
-.mood-btn.active { border-color: var(--accent); background: rgba(0,0,0,0.03); color: #111111; }
+.mood-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.mood-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: rgba(var(--bg-surface-rgb), 0.72); font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); cursor: pointer; box-shadow: var(--shadow-xs); }
+.mood-btn:hover { background: var(--bg-surface); border-color: var(--border-strong); }
+.mood-btn.active { border-color: rgba(var(--accent-rgb), 0.36); background: var(--accent-soft); color: var(--text-primary); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.1); }
 .mood-sym { font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
 
 .linked-section { margin-top: 16px; }
-.section-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #111111; }
+.section-title { font-size: 13px; font-weight: 650; margin-bottom: 8px; color: var(--text-primary); }
 .linked-list { display: flex; flex-direction: column; gap: 4px; }
-.linked-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12.5px; cursor: pointer; transition: all 100ms ease; width: 100%; text-align: left; }
-.linked-item:hover { border-color: var(--text-secondary); color: #111111; }
+.linked-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 10px; background: rgba(var(--bg-surface-rgb), 0.7); color: var(--text-secondary); font-family: var(--font-sans); font-size: 12.5px; cursor: pointer; width: 100%; text-align: left; }
+.linked-item:hover { border-color: var(--accent); color: var(--text-primary); background: var(--bg-surface); }
 .linked-hint { margin-left: auto; font-size: 10px; color: var(--text-disabled); }
 .linked-item:hover .linked-hint { color: var(--text-secondary); }
 

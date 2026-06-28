@@ -13,6 +13,8 @@ pub struct AppSettings {
     pub auto_sync_enabled: bool,
     #[serde(default = "default_sync_interval")]
     pub auto_sync_interval_minutes: i32,
+    #[serde(default = "default_theme")]
+    pub theme: String,
     #[serde(default = "default_llm_base_url")]
     pub llm_base_url: String,
     #[serde(default)]
@@ -25,10 +27,13 @@ fn default_notes_path() -> String {
     String::new()
 }
 fn default_branch() -> String {
-    "main".into()
+    String::new()
 }
 fn default_sync_interval() -> i32 {
     30
+}
+fn default_theme() -> String {
+    "system".into()
 }
 fn default_llm_base_url() -> String {
     "https://api.openai.com/v1".into()
@@ -42,9 +47,10 @@ impl Default for AppSettings {
         Self {
             notes_path: String::new(),
             git_remote_url: String::new(),
-            git_branch: "main".into(),
+            git_branch: String::new(),
             auto_sync_enabled: false,
             auto_sync_interval_minutes: 30,
+            theme: "system".into(),
             llm_base_url: "https://api.openai.com/v1".into(),
             llm_api_key: String::new(),
             llm_model: "deepseek-chat".into(),

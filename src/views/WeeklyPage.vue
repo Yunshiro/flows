@@ -211,13 +211,13 @@ function handleCopy() {
 </template>
 
 <style scoped>
-.page { max-width: 700px; }
-.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
-.page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; }
+.page { max-width: 860px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
+.page-title { font-size: 32px; font-weight: 760; letter-spacing: -0.02em; line-height: 1.08; }
 .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
-.card-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.card { background: rgba(var(--bg-surface-rgb), 0.78); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 22px; margin-bottom: 18px; box-shadow: var(--shadow-sm); backdrop-filter: blur(18px); }
+.card-title { font-size: 15px; font-weight: 680; margin-bottom: 8px; color: var(--text-primary); }
 .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
 .card-header-left { display: flex; flex-direction: column; gap: 8px; }
 .card-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
@@ -229,13 +229,13 @@ function handleCopy() {
   background: var(--bg-canvas);
   font-family: var(--font-sans);
   font-size: 12px;
-  color: #111111;
+  color: var(--text-primary);
   outline: none;
   cursor: pointer;
   max-width: 280px;
 }
 
-.config-select:focus { border-color: var(--text-secondary); }
+.config-select:focus { border-color: var(--accent); }
 
 .no-config-hint {
   font-size: 12px;
@@ -246,7 +246,7 @@ function handleCopy() {
 .stat-ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
 .ring { width: 100%; height: 100%; transform: rotate(-90deg); }
 .ring-bg { fill: none; stroke: var(--tag-gray-bg); stroke-width: 6; }
-.ring-fill { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+.ring-fill { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 800ms cubic-bezier(0.16, 1, 0.3, 1); filter: drop-shadow(0 3px 8px rgba(var(--accent-rgb), 0.22)); }
 .ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .ring-num { font-size: 20px; font-weight: 600; line-height: 1; }
 .ring-label { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
@@ -254,34 +254,34 @@ function handleCopy() {
 .bars { display: flex; align-items: flex-end; gap: 8px; flex: 1; height: 80px; }
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
 .bar-track { flex: 1; width: 100%; display: flex; align-items: flex-end; background: var(--tag-gray-bg); border-radius: 3px; overflow: hidden; }
-.bar-fill { position: relative; width: 100%; background: var(--accent); border-radius: 3px; min-height: 2px; transition: height 600ms cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: flex-start; justify-content: center; }
-.bar-val { font-size: 9px; color: var(--bg-surface); padding-top: 2px; font-weight: 500; }
+.bar-fill { position: relative; width: 100%; background: linear-gradient(180deg, var(--accent-hover), var(--accent)); border-radius: 3px; min-height: 2px; transition: height 600ms cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: flex-start; justify-content: center; }
+.bar-val { font-size: 9px; color: var(--accent-contrast); padding-top: 2px; font-weight: 600; }
 .bar-day { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); }
 
 .mood-summary { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
 .mood-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; gap: 1px; }
 .mood-seg { min-width: 2px; }
 .mood-seg.mood--productive { background: var(--tag-green-text); }
-.mood-seg.mood--normal { background: #787774; }
+.mood-seg.mood--normal { background: var(--text-tertiary); }
 .mood-seg.mood--slacking { background: var(--tag-red-text); }
 .mood-legend { display: flex; gap: 16px; margin-top: 8px; }
 .mood-legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-secondary); }
 .mood-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .mood-dot.mood--productive { background: var(--tag-green-text); }
-.mood-dot.mood--normal { background: #787774; }
+.mood-dot.mood--normal { background: var(--text-tertiary); }
 .mood-dot.mood--slacking { background: var(--tag-red-text); }
 
-.btn-gen { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); color: #111111; font-family: var(--font-sans); font-size: 13px; cursor: pointer; }
-.btn-gen:hover:not(:disabled) { background: rgba(0,0,0,0.04); }
+.btn-gen { padding: 7px 14px; border: 1px solid var(--accent); border-radius: 9px; background: var(--accent); color: var(--accent-contrast); font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 22px rgba(var(--accent-rgb), 0.18); }
+.btn-gen:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
 .btn-gen:disabled { opacity: 0.5; cursor: default; }
 
 .btn-ghost { padding: 5px 10px; border: none; background: transparent; color: var(--text-secondary); font-family: var(--font-sans); font-size: 12px; cursor: pointer; border-radius: 4px; }
-.btn-ghost:hover { background: rgba(0,0,0,0.04); color: #111111; }
+.btn-ghost:hover { background: var(--surface-hover); color: var(--text-primary); }
 
 /* Streaming output */
 .stream-output {
   font-size: 14px;
-  color: #111111;
+  color: var(--text-primary);
   line-height: 1.7;
   white-space: pre-wrap;
   min-height: 60px;
@@ -299,7 +299,7 @@ function handleCopy() {
 
 .cursor-blink {
   display: inline;
-  color: #111111;
+  color: var(--text-primary);
   font-weight: 300;
   animation: blink 0.8s infinite;
 }
@@ -309,7 +309,7 @@ function handleCopy() {
   51%, 100% { opacity: 0; }
 }
 
-.summary-text { font-size: 14px; color: #111111; line-height: 1.7; white-space: pre-wrap; }
+.summary-text { font-size: 14px; color: var(--text-primary); line-height: 1.7; white-space: pre-wrap; }
 .summary-placeholder { font-size: 13px; color: var(--text-tertiary); padding: 20px 0; }
 .summary-placeholder strong { color: var(--text-secondary); }
 </style>

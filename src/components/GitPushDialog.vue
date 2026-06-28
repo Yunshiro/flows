@@ -2,6 +2,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { noteApi } from '../api/notes'
 
+const props = defineProps<{
+  branch: string
+}>()
+
 const emit = defineEmits<{
   close: []
   pushed: []
@@ -47,7 +51,7 @@ function statusLabel(s: string): string {
 async function handlePush() {
   pushing.value = true
   try {
-    await noteApi.gitPush()
+    await noteApi.gitPush(props.branch)
     emit('pushed')
   } catch (e) {
     alert('推送失败: ' + String(e))
@@ -70,7 +74,7 @@ async function handlePush() {
       </div>
 
       <p class="dialog-hint" v-if="files.length === 0 && !loading">
-        没有需要推送的文件变更。
+        没有需要推送到 {{ branch }} 的文件变更。
       </p>
 
       <div class="dialog-body" v-if="files.length > 0">
@@ -107,7 +111,8 @@ async function handlePush() {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(12, 14, 12, 0.42);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,10 +124,10 @@ async function handlePush() {
   max-height: 70vh;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-dialog);
 }
 
 .dialog-header {
@@ -151,7 +156,7 @@ async function handlePush() {
 }
 
 .dialog-close:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--surface-hover);
 }
 
 .dialog-hint {
@@ -193,11 +198,11 @@ async function handlePush() {
   align-items: center;
   gap: 8px;
   padding: 6px 4px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .file-item:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--surface-hover);
 }
 
 .file-status {
@@ -216,7 +221,7 @@ async function handlePush() {
 .file-path {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #111111;
+  color: var(--text-primary);
 }
 
 .dialog-footer {
@@ -231,7 +236,7 @@ async function handlePush() {
 .btn-cancel {
   padding: 7px 16px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 9px;
   background: var(--bg-surface);
   color: var(--text-secondary);
   font-family: var(--font-sans);
@@ -240,18 +245,18 @@ async function handlePush() {
 }
 
 .btn-cancel:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: var(--surface-hover);
 }
 
 .btn-push {
   padding: 7px 18px;
   border: none;
-  border-radius: 6px;
+  border-radius: 9px;
   background: var(--accent);
-  color: var(--bg-surface);
+  color: var(--accent-contrast);
   font-family: var(--font-sans);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
 }
 

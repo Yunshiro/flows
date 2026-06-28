@@ -29,11 +29,17 @@ export const noteApi = {
   gitSetRemote: (url: string) =>
     tauriInvoke<string>('git_set_remote', { url }),
 
-  gitPush: () =>
-    tauriInvoke<string>('git_push', {}),
+  gitCheckoutBranch: (branch: string) =>
+    tauriInvoke<string>('git_checkout_branch', { branch }),
 
-  gitPull: () =>
-    tauriInvoke<string>('git_pull', {}),
+  gitListBranches: () =>
+    tauriInvoke<string[]>('git_list_branches', {}),
+
+  gitPush: (branch: string) =>
+    tauriInvoke<string>('git_push', { branch }),
+
+  gitPull: (branch: string) =>
+    tauriInvoke<string>('git_pull', { branch }),
 
   gitStatus: () =>
     tauriInvoke<string>('git_status', {}),

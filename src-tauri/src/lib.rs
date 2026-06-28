@@ -15,6 +15,10 @@ pub fn run() {
         .expect("Cannot determine app data directory");
 
     let database = Database::new(&app_dir).expect("Failed to initialize database");
+    let mut context = tauri::generate_context!();
+    let app_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/icon.png"))
+        .expect("failed to load app icon");
+    context.set_default_window_icon(Some(app_icon));
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
@@ -41,6 +45,8 @@ pub fn run() {
             commands::git_cmd::git_init,
             commands::git_cmd::git_get_remote,
             commands::git_cmd::git_set_remote,
+            commands::git_cmd::git_checkout_branch,
+            commands::git_cmd::git_list_branches,
             commands::git_cmd::git_push,
             commands::git_cmd::git_pull,
             commands::git_cmd::git_status,
@@ -52,6 +58,6 @@ pub fn run() {
             commands::llm_config_cmd::delete_llm_config,
             commands::llm_config_cmd::get_llm_config,
         ])
-        .run(tauri::generate_context!())
+        .run(context)
         .expect("error while running tauri application");
 }

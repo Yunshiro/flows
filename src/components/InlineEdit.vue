@@ -72,12 +72,13 @@ defineExpose({ startEdit })
   width: 100%;
   padding: 2px 4px;
   margin: -2px 0;
-  border: 1px solid #111111;
-  border-radius: 4px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
   font-family: var(--font-sans);
   font-size: inherit;
-  color: #111111;
+  color: var(--text-primary);
   background: var(--bg-surface);
   outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 </style>

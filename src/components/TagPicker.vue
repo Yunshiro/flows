@@ -89,8 +89,8 @@ function onKeydown(e: KeyboardEvent) {
   gap: 4px;
   padding: 5px 8px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-canvas);
+  border-radius: 8px;
+  background: var(--bg-muted);
   min-height: 32px;
 }
 
@@ -99,7 +99,7 @@ function onKeydown(e: KeyboardEvent) {
   align-items: center;
   gap: 2px;
   padding: 1px 6px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--tag-gray-bg);
   color: var(--text-secondary);
   font-size: 11px;
@@ -123,8 +123,8 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 .tag-remove:hover {
-  background: rgba(0,0,0,0.1);
-  color: #111111;
+  background: var(--surface-active);
+  color: var(--text-primary);
 }
 
 .tag-input {
@@ -134,7 +134,7 @@ function onKeydown(e: KeyboardEvent) {
   background: transparent;
   font-family: var(--font-sans);
   font-size: 12px;
-  color: #111111;
+  color: var(--text-primary);
   outline: none;
 }
 
@@ -154,15 +154,15 @@ function onKeydown(e: KeyboardEvent) {
   padding: 6px 8px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   margin-top: 3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-dropdown);
 }
 
 .tag-suggestion {
   padding: 2px 8px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 7px;
   background: var(--bg-surface);
   color: var(--text-secondary);
   font-family: var(--font-sans);
@@ -173,6 +173,7 @@ function onKeydown(e: KeyboardEvent) {
 
 .tag-suggestion:hover {
   border-color: var(--accent);
-  color: #111111;
+  color: var(--text-primary);
+  background: var(--accent-soft);
 }
 </style>

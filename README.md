@@ -2,6 +2,23 @@
 
 面向个人的时间管理桌面应用。支持每日待办、复盘总结、AI 周报自动生成、Markdown 笔记与 Git 同步。
 
+## 下载与安装
+
+最新安装包可以在 GitHub Releases 下载：
+
+- [下载最新版](https://github.com/Yunshiro/flows/releases/latest)
+- [查看所有安装包](https://github.com/Yunshiro/flows/releases)
+
+根据你的系统选择对应文件：
+
+| 系统 | 安装包 |
+|---|---|
+| macOS Apple Silicon | `Flows_*_aarch64.dmg` |
+| macOS Intel | `Flows_*_x64.dmg` |
+| Windows | `Flows_*.msi` 或 `Flows_*.exe` |
+
+macOS 如果提示“无法验证开发者”，可以在“系统设置 → 隐私与安全性”里允许打开，或右键应用选择“打开”。
+
 ## 功能
 
 | 模块 | 说明 |
@@ -67,6 +84,32 @@ npm run tauri build
 产物在 `src-tauri/target/release/bundle/` 目录：
 - Windows: `.msi` / `.exe`
 - macOS: `.dmg`
+
+### 发布到 GitHub Releases
+
+安装 GitHub CLI 并登录：
+
+```bash
+brew install gh
+gh auth login
+```
+
+创建一个 Release 并上传安装包：
+
+```bash
+gh release create v0.1.0 \
+  src-tauri/target/release/bundle/dmg/Flows_0.1.0_aarch64.dmg \
+  --title "Flows v0.1.0" \
+  --notes "首次发布 Flows 桌面应用。"
+```
+
+如果 Release 已经存在，只需要继续上传新的安装包：
+
+```bash
+gh release upload v0.1.0 \
+  src-tauri/target/release/bundle/dmg/Flows_0.1.0_aarch64.dmg \
+  --clobber
+```
 
 ## 项目结构
 
